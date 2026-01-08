@@ -1,0 +1,224 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$ref": "#/definitions/ITradingAccount",
+    "definitions": {
+        "ITradingAccount": {
+            "type": "object",
+            "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "description": "Account id"
+                },
+                "active": {
+                    "type": "boolean",
+                    "description": "Whether the account is active"
+                },
+                "instrumentPoolIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Instrument pool ids that the account can use. If undefined, the account can use all instruments available in the context."
+                },
+                "strategyKeys": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/StrategyRegistryKey"
+                    },
+                    "description": "Strategy keys that the account can use. If undefined, the account can use all active strategies."
+                },
+                "riskProfileId": {
+                    "type": "string",
+                    "description": "Risk profile id to use"
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "Account base currency"
+                },
+                "leverage": {
+                    "type": "object",
+                    "properties": {
+                        "stock": {
+                            "type": "number"
+                        },
+                        "index": {
+                            "type": "number"
+                        },
+                        "crypto": {
+                            "type": "number"
+                        },
+                        "forex": {
+                            "type": "number"
+                        },
+                        "future": {
+                            "type": "number"
+                        },
+                        "option": {
+                            "type": "number"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "description": "Leverage per instrument type"
+                },
+                "initialMarginPerContract": {
+                    "type": "object",
+                    "properties": {
+                        "long": {
+                            "$ref": "#/definitions/ICompositeGroupPerInstrument"
+                        },
+                        "short": {
+                            "$ref": "#/definitions/ICompositeGroupPerInstrument"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "description": "Initial margin requirement per contract side (percentage of notional)"
+                },
+                "maintenanceMarginPerContract": {
+                    "type": "object",
+                    "properties": {
+                        "long": {
+                            "$ref": "#/definitions/ICompositeGroupPerInstrument"
+                        },
+                        "short": {
+                            "$ref": "#/definitions/ICompositeGroupPerInstrument"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "description": "Maintenance margin requirement per contract side (percentage of notional)"
+                },
+                "exchangeCommission": {
+                    "$ref": "#/definitions/ICompositeGroup",
+                    "description": "Commission applied when converting from source currency to account currency"
+                },
+                "commissionPerOrder": {
+                    "$ref": "#/definitions/ICompositeGroupPerInstrument",
+                    "description": "Commission per order side (charged twice for round-trip)"
+                },
+                "commissionPerContract": {
+                    "$ref": "#/definitions/ICompositeGroupPerInstrument",
+                    "description": "Commission per contract"
+                },
+                "allowMarketOrdersInExtendedHours": {
+                    "type": "boolean",
+                    "description": "Allow market orders in extended hours sessions"
+                },
+                "brokerAccount": {
+                    "$ref": "#/definitions/IBrokerAccount",
+                    "description": "Linked broker account information"
+                }
+            },
+            "required": [
+                "active",
+                "brokerAccount",
+                "currency",
+                "id",
+                "riskProfileId"
+            ],
+            "additionalProperties": false
+        },
+        "StrategyRegistryKey": {
+            "type": "string",
+            "enum": [
+                "Argo_v1_0_0",
+                "GoldenCross_v1_0_0"
+            ],
+            "description": "Strategy Registry Key Type"
+        },
+        "ICompositeGroupPerInstrument": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/ICompositeGroup",
+                "description": "Use ticker, instrument type or currency as key (E.g. AAPL, futures, USD). Use `*` for default values"
+            },
+            "description": "Symbol or instrument type values"
+        },
+        "ICompositeGroup": {
+            "type": "object",
+            "properties": {
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ICompositeValue"
+                    }
+                },
+                "minimum": {
+                    "$ref": "#/definitions/ICompositeValue"
+                },
+                "maximum": {
+                    "$ref": "#/definitions/ICompositeValue"
+                }
+            },
+            "required": [
+                "values"
+            ],
+            "additionalProperties": false
+        },
+        "ICompositeValue": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "number"
+                },
+                "type": {
+                    "$ref": "#/definitions/IValueKind",
+                    "description": "Default is \"fixed\""
+                }
+            },
+            "required": [
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "IValueKind": {
+            "type": "string",
+            "enum": [
+                "fixed",
+                "perc"
+            ]
+        },
+        "IBrokerAccount": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Broker account id"
+                },
+                "accountNumber": {
+                    "type": "string",
+                    "description": "Broker account number"
+                },
+                "type": {
+                    "$ref": "#/definitions/BrokerType",
+                    "description": "Broker type"
+                },
+                "apiKey": {
+                    "type": "string",
+                    "description": "Broker-specific configuration"
+                },
+                "apiSecret": {
+                    "type": "string"
+                },
+                "allowShorting": {
+                    "type": "boolean",
+                    "description": "Whether short selling is permitted"
+                }
+            },
+            "required": [
+                "id",
+                "type"
+            ],
+            "additionalProperties": false
+        },
+        "BrokerType": {
+            "type": "string",
+            "enum": [
+                "alpaca",
+                "interactiveBrokers",
+                "simulated"
+            ]
+        }
+    }
+}

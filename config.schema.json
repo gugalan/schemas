@@ -1,0 +1,599 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$ref": "#/definitions/IConfig",
+    "definitions": {
+        "IConfig": {
+            "type": "object",
+            "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "trader": {
+                    "$ref": "#/definitions/IConfigTrader",
+                    "description": "Trader configuration"
+                },
+                "tuner": {
+                    "$ref": "#/definitions/IConfigTuner",
+                    "description": "Tuner configuration"
+                },
+                "fetcher": {
+                    "$ref": "#/definitions/IConfigFetcher",
+                    "description": "Fetcher configuration"
+                },
+                "server": {
+                    "$ref": "#/definitions/IConfigServer",
+                    "description": "Server configuration"
+                }
+            },
+            "required": [
+                "trader",
+                "tuner",
+                "fetcher",
+                "server"
+            ],
+            "additionalProperties": false,
+            "description": "Main configuration"
+        },
+        "IConfigTrader": {
+            "type": "object",
+            "properties": {
+                "strategies": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "active": {
+                                "type": "boolean",
+                                "description": "Toggle execution for this strategy"
+                            },
+                            "key": {
+                                "$ref": "#/definitions/StrategyRegistryKey",
+                                "description": "Registry key used to instantiate the strategy"
+                            }
+                        },
+                        "required": [
+                            "active",
+                            "key"
+                        ],
+                        "additionalProperties": false
+                    },
+                    "description": "Strategies to load and optionally disable without removing code"
+                },
+                "instrumentPools": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IConfigInstrumentPool"
+                    },
+                    "description": "Instrument pools the engine can monitor (accounts/strategies may further filter)"
+                },
+                "accountRiskProfiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IConfigAccountRiskProfile"
+                    },
+                    "description": "Reusable risk profiles available to accounts"
+                },
+                "strategyRiskProfiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IConfigStrategyRiskProfile"
+                    },
+                    "description": "Unified strategy risk profiles keyed by id"
+                },
+                "maxContextBars": {
+                    "type": "number",
+                    "description": "Max bars per timeframe cached in context (memory/perf trade-off)"
+                },
+                "approachingSignals": {
+                    "$ref": "#/definitions/IConfigApproachSignals",
+                    "description": "Approaching (pre-trigger) signals configuration"
+                },
+                "backtest": {
+                    "$ref": "#/definitions/IConfigBacktest",
+                    "description": "Backtest defaults"
+                },
+                "live": {
+                    "$ref": "#/definitions/IConfigLiveTrading",
+                    "description": "Live trading defaults"
+                },
+                "notifications": {
+                    "type": "object",
+                    "properties": {
+                        "info": {
+                            "$ref": "#/definitions/INotificationConfig"
+                        },
+                        "error": {
+                            "$ref": "#/definitions/INotificationConfig"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "description": "Notification channels keyed by type"
+                }
+            },
+            "required": [
+                "strategies",
+                "instrumentPools",
+                "accountRiskProfiles",
+                "strategyRiskProfiles",
+                "maxContextBars",
+                "approachingSignals",
+                "notifications"
+            ],
+            "additionalProperties": false,
+            "description": "Trader configuration"
+        },
+        "StrategyRegistryKey": {
+            "type": "string",
+            "enum": [
+                "Argo_v1_0_0",
+                "GoldenCross_v1_0_0"
+            ],
+            "description": "Strategy Registry Key Type"
+        },
+        "IConfigInstrumentPool": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Pool id"
+                },
+                "symbols": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Symbols explicitly included in the pool"
+                },
+                "dynamic": {
+                    "type": "boolean",
+                    "description": "True if scanner updates symbols periodically; false for a fixed list"
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "additionalProperties": false,
+            "description": "Instrument pool configuration"
+        },
+        "IConfigAccountRiskProfile": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique id for this account risk profile"
+                },
+                "maxCapitalPerTrade": {
+                    "$ref": "#/definitions/ICompositeValue",
+                    "description": "Max capital to allocate per trade; converted to shares/contracts by the broker adapter. Example: 10_000 means never size above $10k notional per position."
+                },
+                "maxLossPerDay": {
+                    "$ref": "#/definitions/ICompositeValue",
+                    "description": "Max loss per day before all activity stops for the account"
+                },
+                "maxSpreadPerTrade": {
+                    "$ref": "#/definitions/ICompositeValue",
+                    "description": "Max spread allowed to open; wider spreads skip the trade"
+                },
+                "minSignalScore": {
+                    "type": "number",
+                    "description": "Minimum signal score required to place trades (0..1)"
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "additionalProperties": false,
+            "description": "Account risk profile configuration"
+        },
+        "ICompositeValue": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "number"
+                },
+                "type": {
+                    "$ref": "#/definitions/IValueKind",
+                    "description": "Default is \"fixed\""
+                }
+            },
+            "required": [
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "IValueKind": {
+            "type": "string",
+            "enum": [
+                "fixed",
+                "perc"
+            ]
+        },
+        "IConfigStrategyRiskProfile": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/StrategyRiskProfileId",
+                    "description": "Unique id for this strategy risk profile"
+                },
+                "maxRiskPercPerTrade": {
+                    "type": "number",
+                    "description": "Max risk fraction per trade; modifiers can only reduce this."
+                },
+                "maxDrawdownPercPerDay": {
+                    "type": "number",
+                    "description": "Max daily drawdown (fraction of equity); trading is blocked when breached."
+                },
+                "expectancyCap": {
+                    "type": "number",
+                    "description": "Expectancy threshold above which the derived \"quality\" score is clamped to 1."
+                },
+                "sentimentImpact": {
+                    "type": "number",
+                    "description": "Optional maximum absolute fractional adjustment to position sizing driven by sentiment signals."
+                },
+                "hv": {
+                    "$ref": "#/definitions/IConfigHVRule",
+                    "description": "Historical volatility-based multipliers and shock model"
+                },
+                "backtest": {
+                    "type": "object",
+                    "properties": {
+                        "slippageFactor": {
+                            "type": "number",
+                            "description": "Slippage factor applied during backtesting"
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "id",
+                "maxRiskPercPerTrade",
+                "maxDrawdownPercPerDay"
+            ],
+            "additionalProperties": false,
+            "description": "Strategy risk profile configuration"
+        },
+        "StrategyRiskProfileId": {
+            "type": "string",
+            "enum": [
+                "default",
+                "eventDriven",
+                "scalping.trend",
+                "scalping.breakout",
+                "scalping.meanReversion",
+                "scalping.range",
+                "scalping.liquidity",
+                "scalping.volatility",
+                "intraday.trend",
+                "intraday.breakout",
+                "intraday.meanReversion",
+                "intraday.range",
+                "intraday.liquidity",
+                "intraday.volatility",
+                "swing.trend",
+                "swing.breakout",
+                "swing.meanReversion",
+                "swing.range",
+                "swing.liquidity",
+                "swing.volatility",
+                "position.trend",
+                "position.breakout",
+                "position.meanReversion",
+                "position.range",
+                "position.liquidity",
+                "position.volatility"
+            ]
+        },
+        "IConfigHVRule": {
+            "type": "object",
+            "properties": {
+                "bands": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "threshold": {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ],
+                                "description": "Upper bound for this band; if null, this is the catch-all band."
+                            },
+                            "riskMultiplier": {
+                                "type": "number",
+                                "description": "Risk multiplier applied when value falls into this band"
+                            }
+                        },
+                        "required": [
+                            "threshold",
+                            "riskMultiplier"
+                        ],
+                        "additionalProperties": false
+                    }
+                },
+                "lookbackDays": {
+                    "type": "number",
+                    "description": "Daily bars used to compute hvDaily for this profile. This sets the lookback window for volatility, not the sizing formula itself. Example: 10 for scalping, 20 for intraday, 30 for swing, 60 for position."
+                },
+                "shock": {
+                    "type": "number",
+                    "description": "Multiple of daily HV used to estimate a \"shock\" per unit when no explicit stop distance is provided by the strategy. perUnitRisk = hvDaily * hvShockMultiple * price. Example: 1.5 ≈ 1.5 sigma shock."
+                }
+            },
+            "required": [
+                "bands",
+                "lookbackDays",
+                "shock"
+            ],
+            "additionalProperties": false,
+            "description": "Historical volatility-based risk rule configuration"
+        },
+        "IConfigApproachSignals": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "object",
+                    "properties": {
+                        "live": {
+                            "type": "boolean"
+                        },
+                        "backtest": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "live",
+                        "backtest"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Whether to consider approaching (pre-trigger) signals in order creation"
+                },
+                "notify": {
+                    "type": "boolean",
+                    "description": "Whether to send notifications for approaching signals"
+                }
+            },
+            "required": [
+                "active",
+                "notify"
+            ],
+            "additionalProperties": false,
+            "description": "Approaching (pre-trigger) signals configuration"
+        },
+        "IConfigBacktest": {
+            "type": "object",
+            "properties": {
+                "startDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Start date; if missing, use maximum available local history"
+                },
+                "endDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "End date; if missing, run up to current date"
+                },
+                "spread": {
+                    "$ref": "#/definitions/ICompositeDynamicValue",
+                    "description": "Simulated spread to inject in fills"
+                },
+                "slippage": {
+                    "$ref": "#/definitions/ICompositeDynamicValue",
+                    "description": "Simulated slippage per trade"
+                },
+                "analyzeStrategiesPerformance": {
+                    "type": "boolean",
+                    "description": "Enable per-strategy performance analysis during backtests.  This is an additional analysis mode that creates a separate account for each strategy, in addition to the main account running all strategies. Each \"shadow\" account runs a single strategy with its own portfolio, allowing performance attribution without competition. This option increases memory usage and computation time."
+                },
+                "initialCapital": {
+                    "type": "number",
+                    "description": "Initial capital for backtesting"
+                }
+            },
+            "required": [
+                "initialCapital"
+            ],
+            "additionalProperties": false,
+            "description": "Backtest configuration"
+        },
+        "ICompositeDynamicValue": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/ICompositeValue"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "const": "dynamic"
+                        }
+                    },
+                    "required": [
+                        "type"
+                    ],
+                    "additionalProperties": false
+                }
+            ]
+        },
+        "IConfigLiveTrading": {
+            "type": "object",
+            "properties": {
+                "warnUpBarsCount": {
+                    "type": "number",
+                    "description": "Number of bars to warm up the context before starting live trading"
+                }
+            },
+            "additionalProperties": false,
+            "description": "Live trading configuration"
+        },
+        "INotificationConfig": {
+            "type": "object",
+            "properties": {
+                "channels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NotificationChannel"
+                    },
+                    "description": "Channels where to send notifications - individual notifications can override this"
+                },
+                "webhooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/INotificationConfigWebhook"
+                    },
+                    "description": "Configuration for webhooks notification"
+                },
+                "telegram": {
+                    "$ref": "#/definitions/INotificationConfigTelegram",
+                    "description": "Configuration for notification on Telegram"
+                }
+            },
+            "required": [
+                "channels"
+            ],
+            "additionalProperties": false
+        },
+        "NotificationChannel": {
+            "type": "string",
+            "enum": [
+                "app",
+                "webhook",
+                "telegram"
+            ],
+            "description": "Gugalanna Copyright (c) 2025 Daniele Perilli"
+        },
+        "INotificationConfigWebhook": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "Webhook URL"
+                },
+                "method": {
+                    "type": "string",
+                    "enum": [
+                        "POST",
+                        "GET"
+                    ],
+                    "description": "HTTP method - Default is 'GET'"
+                },
+                "messageWrapper": {
+                    "type": "string",
+                    "description": "Optional message wrapper\n\nSupported placeholders: \n- {body} - the notification message\n- {<meta_key1>}, {<meta_key1>}, ... - the notification meta keys, if any"
+                }
+            },
+            "required": [
+                "url"
+            ],
+            "additionalProperties": false
+        },
+        "INotificationConfigTelegram": {
+            "type": "object",
+            "properties": {
+                "chatIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of chats where to spread the notifications"
+                }
+            },
+            "required": [
+                "chatIds"
+            ],
+            "additionalProperties": false
+        },
+        "IConfigTuner": {
+            "type": "object",
+            "properties": {
+                "symbols": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Symbols to tune. Use an empty list to tune all available symbols."
+                },
+                "expirationDays": {
+                    "type": "number",
+                    "description": "Number of days to look back for tuning data"
+                }
+            },
+            "required": [
+                "symbols",
+                "expirationDays"
+            ],
+            "additionalProperties": false,
+            "description": "Tuner configuration"
+        },
+        "IConfigFetcher": {
+            "type": "object",
+            "properties": {
+                "instrumentTypes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/InstrumentType"
+                    },
+                    "description": "Instrument types to fetch"
+                },
+                "client": {
+                    "$ref": "#/definitions/MarketDataClientType",
+                    "description": "Market data client type to use"
+                }
+            },
+            "required": [
+                "instrumentTypes",
+                "client"
+            ],
+            "additionalProperties": false,
+            "description": "Fetcher configuration"
+        },
+        "InstrumentType": {
+            "type": "string",
+            "enum": [
+                "stock",
+                "index",
+                "crypto",
+                "forex",
+                "future",
+                "option"
+            ],
+            "description": "Instrument type"
+        },
+        "MarketDataClientType": {
+            "type": "string",
+            "const": "massive",
+            "description": "Market Data Client Types"
+        },
+        "IConfigServer": {
+            "type": "object",
+            "properties": {
+                "port": {
+                    "type": "number",
+                    "description": "Server port"
+                },
+                "rateLimitRequests": {
+                    "type": "number",
+                    "description": "Maximum number of requests allowed per rate limit window"
+                },
+                "rateLimitWindowMs": {
+                    "type": "number",
+                    "description": "Rate limit window duration in milliseconds"
+                },
+                "corsOrigins": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Allowed CORS origins"
+                }
+            },
+            "required": [
+                "port"
+            ],
+            "additionalProperties": false,
+            "description": "Server configuration"
+        }
+    }
+}
