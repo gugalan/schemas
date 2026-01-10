@@ -538,8 +538,8 @@
                     "description": "Instrument types to fetch"
                 },
                 "client": {
-                    "$ref": "#/definitions/MarketDataClientType",
-                    "description": "Market data client type to use"
+                    "$ref": "#/definitions/IConfigMarketDataClient",
+                    "description": "Market data client"
                 }
             },
             "required": [
@@ -561,10 +561,50 @@
             ],
             "description": "Instrument type"
         },
+        "IConfigMarketDataClient": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "$ref": "#/definitions/MarketDataClientType",
+                    "description": "Market data client type"
+                },
+                "rateLimit": {
+                    "$ref": "#/definitions/MarketRateLimitConfig",
+                    "description": "Rate limit configuration"
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "additionalProperties": false,
+            "description": "Market data client configuration"
+        },
         "MarketDataClientType": {
             "type": "string",
             "const": "massive",
             "description": "Market Data Client Types"
+        },
+        "MarketRateLimitConfig": {
+            "type": "object",
+            "properties": {
+                "requests": {
+                    "type": "number",
+                    "description": "Maximum number of requests allowed within the window"
+                },
+                "windowMs": {
+                    "type": "number",
+                    "description": "Time window in milliseconds for the rate limit"
+                },
+                "minDelayMs": {
+                    "type": "number",
+                    "description": "Minimum delay in milliseconds between requests"
+                }
+            },
+            "required": [
+                "requests",
+                "windowMs"
+            ],
+            "additionalProperties": false
         },
         "IConfigServer": {
             "type": "object",
