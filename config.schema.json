@@ -540,6 +540,28 @@
                 "client": {
                     "$ref": "#/definitions/IConfigMarketDataClient",
                     "description": "Market data client"
+                },
+                "toFetch": {
+                    "type": "object",
+                    "properties": {
+                        "instruments": {
+                            "type": "boolean"
+                        },
+                        "historicalPrices": {
+                            "type": "boolean"
+                        },
+                        "markets": {
+                            "type": "boolean"
+                        },
+                        "splits": {
+                            "type": "boolean"
+                        },
+                        "dividends": {
+                            "type": "boolean"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "description": "Entities to fetch. If missing, fetch all entities.  If present, only fetch the specified entities."
                 }
             },
             "required": [
