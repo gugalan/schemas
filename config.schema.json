@@ -40,24 +40,9 @@
                 "strategies": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "active": {
-                                "type": "boolean",
-                                "description": "Toggle execution for this strategy"
-                            },
-                            "key": {
-                                "$ref": "#/definitions/StrategyRegistryKey",
-                                "description": "Registry key used to instantiate the strategy"
-                            }
-                        },
-                        "required": [
-                            "active",
-                            "key"
-                        ],
-                        "additionalProperties": false
+                        "$ref": "#/definitions/StrategyRegistryKey"
                     },
-                    "description": "Strategies to load and optionally disable without removing code"
+                    "description": "Strategies available"
                 },
                 "instrumentPools": {
                     "type": "array",
@@ -90,11 +75,11 @@
                 },
                 "backtest": {
                     "$ref": "#/definitions/IConfigBacktest",
-                    "description": "Backtest defaults"
+                    "description": "Backtest config"
                 },
                 "live": {
                     "$ref": "#/definitions/IConfigLiveTrading",
-                    "description": "Live trading defaults"
+                    "description": "Live trading config"
                 },
                 "notifications": {
                     "type": "object",
@@ -117,6 +102,8 @@
                 "strategyRiskProfiles",
                 "maxContextBars",
                 "approachingSignals",
+                "backtest",
+                "live",
                 "notifications"
             ],
             "additionalProperties": false,
@@ -420,11 +407,14 @@
         "IConfigLiveTrading": {
             "type": "object",
             "properties": {
-                "warnUpBarsCount": {
+                "warmUpBarsCount": {
                     "type": "number",
                     "description": "Number of bars to warm up the context before starting live trading"
                 }
             },
+            "required": [
+                "warmUpBarsCount"
+            ],
             "additionalProperties": false,
             "description": "Live trading configuration"
         },
