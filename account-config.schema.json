@@ -111,11 +111,11 @@
                 }
             },
             "required": [
-                "active",
-                "brokerAccount",
-                "currency",
                 "id",
-                "riskProfileId"
+                "active",
+                "riskProfileId",
+                "currency",
+                "brokerAccount"
             ],
             "additionalProperties": false
         },

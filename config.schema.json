@@ -19,17 +19,12 @@
                 "fetcher": {
                     "$ref": "#/definitions/IConfigFetcher",
                     "description": "Fetcher configuration"
-                },
-                "server": {
-                    "$ref": "#/definitions/IConfigServer",
-                    "description": "Server configuration"
                 }
             },
             "required": [
                 "trader",
                 "tuner",
-                "fetcher",
-                "server"
+                "fetcher"
             ],
             "additionalProperties": false,
             "description": "Main configuration"
@@ -452,7 +447,7 @@
                 "webhook",
                 "telegram"
             ],
-            "description": "Gugalanna Copyright (c) 2025 Daniele Perilli"
+            "description": "Gugalanna Copyright (c) Daniele Perilli"
         },
         "INotificationConfigWebhook": {
             "type": "object",
@@ -617,35 +612,6 @@
                 "windowMs"
             ],
             "additionalProperties": false
-        },
-        "IConfigServer": {
-            "type": "object",
-            "properties": {
-                "port": {
-                    "type": "number",
-                    "description": "Server port"
-                },
-                "rateLimitRequests": {
-                    "type": "number",
-                    "description": "Maximum number of requests allowed per rate limit window"
-                },
-                "rateLimitWindowMs": {
-                    "type": "number",
-                    "description": "Rate limit window duration in milliseconds"
-                },
-                "corsOrigins": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Allowed CORS origins"
-                }
-            },
-            "required": [
-                "port"
-            ],
-            "additionalProperties": false,
-            "description": "Server configuration"
         }
     }
 }
