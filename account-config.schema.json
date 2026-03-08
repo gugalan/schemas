@@ -61,7 +61,7 @@
                         }
                     },
                     "additionalProperties": false,
-                    "description": "Leverage per instrument type"
+                    "description": "Leverage per margined instrument type. Non-margined instruments are always cash-settled in full."
                 },
                 "initialMarginPerContract": {
                     "type": "object",
@@ -123,7 +123,8 @@
             "type": "string",
             "enum": [
                 "Argo_v1_0_0",
-                "GoldenCross_v1_0_0"
+                "GoldenCross_v1_0_0",
+                "OrderBlockGrabReversion_v1_0_0"
             ],
             "description": "Strategy Registry Key Type"
         },
@@ -203,7 +204,7 @@
                 },
                 "allowShorting": {
                     "type": "boolean",
-                    "description": "Whether short selling is permitted"
+                    "description": "Whether opening short positions is permitted"
                 }
             },
             "required": [

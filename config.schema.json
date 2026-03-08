@@ -108,7 +108,8 @@
             "type": "string",
             "enum": [
                 "Argo_v1_0_0",
-                "GoldenCross_v1_0_0"
+                "GoldenCross_v1_0_0",
+                "OrderBlockGrabReversion_v1_0_0"
             ],
             "description": "Strategy Registry Key Type"
         },
