@@ -522,10 +522,6 @@
                     "$ref": "#/definitions/IConfigMarketDataClient",
                     "description": "Market data client"
                 },
-                "fundamentalsMaxAgeMs": {
-                    "$ref": "#/definitions/IConfigFundamentalsMaxAgeMs",
-                    "description": "Maximum local age in milliseconds before Massive fundamentals are refreshed again"
-                },
                 "toFetch": {
                     "type": "object",
                     "properties": {
@@ -578,6 +574,14 @@
                 "rateLimit": {
                     "$ref": "#/definitions/MarketRateLimitConfig",
                     "description": "Rate limit configuration"
+                },
+                "detailsAge": {
+                    "type": "number",
+                    "description": "Maximum local age in days before ticker details are refreshed again"
+                },
+                "assetsAge": {
+                    "type": "number",
+                    "description": "Maximum local age in days before branding assets are refreshed again"
                 }
             },
             "required": [
@@ -612,21 +616,6 @@
                 "windowMs"
             ],
             "additionalProperties": false
-        },
-        "IConfigFundamentalsMaxAgeMs": {
-            "type": "object",
-            "properties": {
-                "details": {
-                    "type": "number",
-                    "description": "Maximum local age in milliseconds before ticker details are refreshed again"
-                },
-                "assets": {
-                    "type": "number",
-                    "description": "Maximum local age in milliseconds before branding assets are refreshed again"
-                }
-            },
-            "additionalProperties": false,
-            "description": "Maximum local age in milliseconds before Massive fundamentals are refreshed again"
         }
     }
 }
