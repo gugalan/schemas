@@ -1,0 +1,272 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$ref": "#/definitions/IInstrumentPoolCatalog",
+    "definitions": {
+        "IInstrumentPoolCatalog": {
+            "type": "object",
+            "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "etfSources": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/IInstrumentPoolEtfSourceConfig"
+                    }
+                },
+                "categoryConfigs": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/IInstrumentPoolCategoryConfig"
+                    }
+                },
+                "liquidityPresets": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/IInstrumentPoolLiquidityPresetConfig"
+                    }
+                },
+                "pools": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IInstrumentPool"
+                    }
+                }
+            },
+            "required": [
+                "etfSources",
+                "categoryConfigs",
+                "liquidityPresets",
+                "pools"
+            ],
+            "additionalProperties": false,
+            "description": "Global instrument pool catalog"
+        },
+        "IInstrumentPoolEtfSourceConfig": {
+            "type": "object",
+            "properties": {
+                "provider": {
+                    "type": "string"
+                },
+                "sourceTicker": {
+                    "type": "string"
+                },
+                "holdingsUrl": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "provider",
+                "sourceTicker",
+                "holdingsUrl"
+            ],
+            "additionalProperties": false
+        },
+        "IInstrumentPoolCategoryConfig": {
+            "type": "object",
+            "properties": {
+                "sicCodes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "sicCodes"
+            ],
+            "additionalProperties": false
+        },
+        "IInstrumentPoolLiquidityPresetConfig": {
+            "type": "object",
+            "properties": {
+                "top": {
+                    "type": "number"
+                },
+                "lookbackDays": {
+                    "type": "number"
+                },
+                "minPrice": {
+                    "type": "number"
+                },
+                "minMarketCap": {
+                    "type": "number"
+                },
+                "maxMarketCap": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "top",
+                "lookbackDays",
+                "minPrice"
+            ],
+            "additionalProperties": false
+        },
+        "IInstrumentPool": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/IInstrumentPoolManual"
+                },
+                {
+                    "$ref": "#/definitions/IInstrumentPoolEtf"
+                },
+                {
+                    "$ref": "#/definitions/IInstrumentPoolCategory"
+                },
+                {
+                    "$ref": "#/definitions/IInstrumentPoolLiquidity"
+                },
+                {
+                    "$ref": "#/definitions/IInstrumentPoolDynamic"
+                }
+            ]
+        },
+        "IInstrumentPoolManual": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string",
+                    "const": "manual"
+                },
+                "symbols": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "id",
+                "kind",
+                "symbols"
+            ],
+            "additionalProperties": false,
+            "description": "Manual pool descriptor"
+        },
+        "IInstrumentPoolEtf": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string",
+                    "const": "etf"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "top": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "id",
+                "kind",
+                "source"
+            ],
+            "additionalProperties": false,
+            "description": "ETF pool descriptor"
+        },
+        "IInstrumentPoolCategory": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string",
+                    "const": "category"
+                },
+                "category": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "category",
+                "id",
+                "kind"
+            ],
+            "additionalProperties": false,
+            "description": "Category pool descriptor"
+        },
+        "IInstrumentPoolLiquidity": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string",
+                    "const": "liquidity"
+                },
+                "preset": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "kind",
+                "preset"
+            ],
+            "additionalProperties": false,
+            "description": "Liquidity pool descriptor"
+        },
+        "IInstrumentPoolDynamic": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string",
+                    "const": "dynamic"
+                },
+                "scannerId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "kind",
+                "scannerId"
+            ],
+            "additionalProperties": false,
+            "description": "Dynamic pool descriptor"
+        }
+    }
+}

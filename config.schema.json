@@ -39,12 +39,9 @@
                     },
                     "description": "Strategies available"
                 },
-                "instrumentPools": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/IConfigInstrumentPool"
-                    },
-                    "description": "Instrument pools the engine can monitor (accounts/strategies may further filter)"
+                "instrumentUniverse": {
+                    "$ref": "#/definitions/IConfigInstrumentUniverse",
+                    "description": "Instrument universe requested by the trader config"
                 },
                 "accountRiskProfiles": {
                     "type": "array",
@@ -92,7 +89,7 @@
             },
             "required": [
                 "strategies",
-                "instrumentPools",
+                "instrumentUniverse",
                 "accountRiskProfiles",
                 "strategyRiskProfiles",
                 "maxContextBars",
@@ -112,30 +109,29 @@
             ],
             "description": "Strategy Registry Key Type"
         },
-        "IConfigInstrumentPool": {
+        "IConfigInstrumentUniverse": {
             "type": "object",
             "properties": {
-                "id": {
-                    "type": "string",
-                    "description": "Pool id"
+                "poolIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Pool ids selected from the global instrument pool catalog"
                 },
                 "symbols": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     },
-                    "description": "Symbols explicitly included in the pool"
-                },
-                "dynamic": {
-                    "type": "boolean",
-                    "description": "True if scanner updates symbols periodically; false for a fixed list"
+                    "description": "Explicit symbols added on top of the selected pools"
                 }
             },
             "required": [
-                "id"
+                "poolIds"
             ],
             "additionalProperties": false,
-            "description": "Instrument pool configuration"
+            "description": "Instrument universe configuration"
         },
         "IConfigAccountRiskProfile": {
             "type": "object",
@@ -526,6 +522,10 @@
                     "$ref": "#/definitions/IConfigMarketDataClient",
                     "description": "Market data client"
                 },
+                "fundamentalsMaxAgeMs": {
+                    "$ref": "#/definitions/IConfigFundamentalsMaxAgeMs",
+                    "description": "Maximum local age in milliseconds before Massive fundamentals are refreshed again"
+                },
                 "toFetch": {
                     "type": "object",
                     "properties": {
@@ -612,6 +612,21 @@
                 "windowMs"
             ],
             "additionalProperties": false
+        },
+        "IConfigFundamentalsMaxAgeMs": {
+            "type": "object",
+            "properties": {
+                "details": {
+                    "type": "number",
+                    "description": "Maximum local age in milliseconds before ticker details are refreshed again"
+                },
+                "assets": {
+                    "type": "number",
+                    "description": "Maximum local age in milliseconds before branding assets are refreshed again"
+                }
+            },
+            "additionalProperties": false,
+            "description": "Maximum local age in milliseconds before Massive fundamentals are refreshed again"
         }
     }
 }
