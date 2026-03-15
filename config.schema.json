@@ -594,7 +594,7 @@
                     "additionalProperties": false,
                     "description": "Rate limit configuration"
                 },
-                "ageLimits": {
+                "refreshDays": {
                     "type": "object",
                     "properties": {
                         "details": {
@@ -607,7 +607,7 @@
                         }
                     },
                     "additionalProperties": false,
-                    "description": "Optional age limits for cached data"
+                    "description": "Optional maximum local age in days for cached data before refreshing from the source"
                 }
             },
             "required": [
