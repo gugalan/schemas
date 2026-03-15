@@ -572,16 +572,42 @@
                     "description": "Market data client type"
                 },
                 "rateLimit": {
-                    "$ref": "#/definitions/MarketRateLimitConfig",
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "number",
+                            "description": "Maximum number of requests allowed within the window"
+                        },
+                        "windowMs": {
+                            "type": "number",
+                            "description": "Time window in milliseconds for the rate limit"
+                        },
+                        "minDelayMs": {
+                            "type": "number",
+                            "description": "Minimum delay in milliseconds between requests"
+                        }
+                    },
+                    "required": [
+                        "requests",
+                        "windowMs"
+                    ],
+                    "additionalProperties": false,
                     "description": "Rate limit configuration"
                 },
-                "detailsAge": {
-                    "type": "number",
-                    "description": "Maximum local age in days before ticker details are refreshed again"
-                },
-                "assetsAge": {
-                    "type": "number",
-                    "description": "Maximum local age in days before branding assets are refreshed again"
+                "ageLimits": {
+                    "type": "object",
+                    "properties": {
+                        "details": {
+                            "type": "number",
+                            "description": "Maximum local age in days before ticker details are refreshed again"
+                        },
+                        "assets": {
+                            "type": "number",
+                            "description": "Maximum local age in days before branding assets are refreshed again"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "description": "Optional age limits for cached data"
                 }
             },
             "required": [
@@ -594,28 +620,6 @@
             "type": "string",
             "const": "massive",
             "description": "Market Data Client Types"
-        },
-        "MarketRateLimitConfig": {
-            "type": "object",
-            "properties": {
-                "requests": {
-                    "type": "number",
-                    "description": "Maximum number of requests allowed within the window"
-                },
-                "windowMs": {
-                    "type": "number",
-                    "description": "Time window in milliseconds for the rate limit"
-                },
-                "minDelayMs": {
-                    "type": "number",
-                    "description": "Minimum delay in milliseconds between requests"
-                }
-            },
-            "required": [
-                "requests",
-                "windowMs"
-            ],
-            "additionalProperties": false
         }
     }
 }
