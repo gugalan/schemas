@@ -140,6 +140,10 @@
                     "type": "string",
                     "description": "Unique id for this account risk profile"
                 },
+                "minCapitalPerTrade": {
+                    "$ref": "#/definitions/ICompositeValue",
+                    "description": "Minimum capital required to open a trade. Orders whose final allocated capital is below this threshold are discarded. Example: 1_000 means skip trades that would allocate less than $1k."
+                },
                 "maxCapitalPerTrade": {
                     "$ref": "#/definitions/ICompositeValue",
                     "description": "Max capital to allocate per trade; converted to shares/contracts by the broker adapter. Example: 10_000 means never size above $10k notional per position."
