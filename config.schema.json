@@ -370,6 +370,14 @@
                     "type": "boolean",
                     "description": "Enable per-strategy performance analysis during backtests.  This is an additional analysis mode that creates a separate account for each strategy, in addition to the main account running all strategies. Each \"shadow\" account runs a single strategy with its own portfolio, allowing performance attribution without competition. This option increases memory usage and computation time."
                 },
+                "fastMode": {
+                    "$ref": "#/definitions/IConfigBacktestFastMode",
+                    "description": "Optional fast-backtest mode. This preserves trading behavior but reduces audit and curve persistence to improve throughput."
+                },
+                "journalKind": {
+                    "$ref": "#/definitions/JournalKind",
+                    "description": "Logical journal kind to assign to this backtest"
+                },
                 "initialCapital": {
                     "type": "number",
                     "description": "Initial capital for backtesting"
@@ -400,6 +408,40 @@
                     "additionalProperties": false
                 }
             ]
+        },
+        "IConfigBacktestFastMode": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean",
+                    "description": "Enable fast-backtest mode"
+                },
+                "persistSignals": {
+                    "type": "boolean",
+                    "description": "Persist signals table rows during the run"
+                },
+                "persistNotifications": {
+                    "type": "boolean",
+                    "description": "Persist notification log entries during the run"
+                },
+                "persistEquityCurve": {
+                    "type": "boolean",
+                    "description": "Persist intermediate equity snapshots during the run"
+                }
+            },
+            "required": [
+                "active"
+            ],
+            "additionalProperties": false,
+            "description": "Fast-backtest configuration"
+        },
+        "JournalKind": {
+            "type": "number",
+            "enum": [
+                0,
+                1
+            ],
+            "description": "Gugalanna Copyright (c) Daniele Perilli"
         },
         "IConfigLiveTrading": {
             "type": "object",
