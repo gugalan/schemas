@@ -123,6 +123,8 @@
             "type": "string",
             "enum": [
                 "Argo_v1_0_0",
+                "Hermes_v1_0_0",
+                "Hermes_v1_1_0",
                 "Janus_v1_0_0"
             ],
             "description": "Strategy Registry Key Type"
