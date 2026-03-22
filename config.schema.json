@@ -134,6 +134,10 @@
                         "type": "string"
                     },
                     "description": "Symbols excluded globally from the resolved universe"
+                },
+                "rebalance": {
+                    "$ref": "#/definitions/IInstrumentUniverseRebalance",
+                    "description": "Rebalance cadence applied to dynamic pools; defaults to weekly when omitted"
                 }
             },
             "required": [
@@ -141,6 +145,15 @@
             ],
             "additionalProperties": false,
             "description": "Instrument universe configuration"
+        },
+        "IInstrumentUniverseRebalance": {
+            "type": "string",
+            "enum": [
+                "daily",
+                "weekly",
+                "monthly"
+            ],
+            "description": "Instrument universe rebalance cadence"
         },
         "IConfigAccountRiskProfile": {
             "type": "object",
