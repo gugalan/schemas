@@ -127,6 +127,13 @@
                         "type": "string"
                     },
                     "description": "Explicit symbols added on top of the selected pools"
+                },
+                "excludedSymbols": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Symbols excluded globally from the resolved universe"
                 }
             },
             "required": [

@@ -113,6 +113,9 @@
                 "base": {
                     "$ref": "#/definitions/IInstrumentPoolDynamicBase"
                 },
+                "rebalance": {
+                    "$ref": "#/definitions/IInstrumentPoolDynamicRebalance"
+                },
                 "filters": {
                     "$ref": "#/definitions/IInstrumentPoolDynamicFilters"
                 },
@@ -126,7 +129,8 @@
             "required": [
                 "base",
                 "id",
-                "kind"
+                "kind",
+                "rebalance"
             ],
             "additionalProperties": false,
             "description": "Dynamic pool descriptor"
@@ -174,6 +178,14 @@
                 "category"
             ],
             "additionalProperties": false
+        },
+        "IInstrumentPoolDynamicRebalance": {
+            "type": "string",
+            "enum": [
+                "daily",
+                "weekly",
+                "monthly"
+            ]
         },
         "IInstrumentPoolDynamicFilters": {
             "type": "object",
