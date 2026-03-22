@@ -436,12 +436,11 @@
             "description": "Fast-backtest configuration"
         },
         "JournalKind": {
-            "type": "number",
+            "type": "string",
             "enum": [
-                0,
-                1
-            ],
-            "description": "Gugalanna Copyright (c) Daniele Perilli"
+                "standard",
+                "research"
+            ]
         },
         "IConfigLiveTrading": {
             "type": "object",
@@ -586,6 +585,9 @@
                             "type": "boolean"
                         },
                         "dividends": {
+                            "type": "boolean"
+                        },
+                        "memberships": {
                             "type": "boolean"
                         }
                     },
