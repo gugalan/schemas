@@ -138,6 +138,13 @@
                 "rebalance": {
                     "$ref": "#/definitions/IInstrumentUniverseRebalance",
                     "description": "Rebalance cadence applied to dynamic pools; defaults to weekly when omitted"
+                },
+                "explainSymbols": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Symbols to explain across the latest snapshots; disabled automatically in fast backtests"
                 }
             },
             "required": [

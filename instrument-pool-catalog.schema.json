@@ -186,6 +186,9 @@
                 },
                 "liquidity": {
                     "$ref": "#/definitions/IInstrumentPoolDynamicLiquidityFilter"
+                },
+                "volatility": {
+                    "$ref": "#/definitions/IInstrumentPoolDynamicVolatilityFilter"
                 }
             },
             "additionalProperties": false
@@ -201,6 +204,29 @@
                 }
             },
             "required": [
+                "lookbackDays"
+            ],
+            "additionalProperties": false
+        },
+        "IInstrumentPoolDynamicVolatilityFilter": {
+            "type": "object",
+            "properties": {
+                "metric": {
+                    "type": "string",
+                    "const": "atrPercent"
+                },
+                "lookbackDays": {
+                    "type": "number"
+                },
+                "min": {
+                    "type": "number"
+                },
+                "max": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "metric",
                 "lookbackDays"
             ],
             "additionalProperties": false
@@ -230,6 +256,28 @@
             "properties": {
                 "top": {
                     "type": "number"
+                },
+                "correlation": {
+                    "type": "object",
+                    "properties": {
+                        "lookbackDays": {
+                            "type": "number"
+                        },
+                        "threshold": {
+                            "type": "number"
+                        },
+                        "maxCorrelatedSelected": {
+                            "type": "number"
+                        },
+                        "preselect": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "lookbackDays",
+                        "threshold"
+                    ],
+                    "additionalProperties": false
                 }
             },
             "additionalProperties": false
