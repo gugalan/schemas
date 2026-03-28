@@ -250,6 +250,10 @@
                 "backtest": {
                     "type": "object",
                     "properties": {
+                        "spreadFactor": {
+                            "type": "number",
+                            "description": "Spread factor applied during backtesting"
+                        },
                         "slippageFactor": {
                             "type": "number",
                             "description": "Slippage factor applied during backtesting"
