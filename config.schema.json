@@ -594,6 +594,22 @@
         "IConfigFetcher": {
             "type": "object",
             "properties": {
+                "prices": {
+                    "$ref": "#/definitions/IConfigFetcherEntity",
+                    "description": "Whether price ingestion is enabled"
+                },
+                "instruments": {
+                    "$ref": "#/definitions/IConfigFetcherEntity",
+                    "description": "Whether instrument ingestion is enabled"
+                },
+                "markets": {
+                    "$ref": "#/definitions/IConfigFetcherEntity",
+                    "description": "Whether market ingestion is enabled"
+                },
+                "calendar": {
+                    "$ref": "#/definitions/IConfigFetcherCalendar",
+                    "description": "Calendar ingestion configuration"
+                },
                 "instrumentTypes": {
                     "type": "array",
                     "items": {
@@ -601,42 +617,64 @@
                     },
                     "description": "Instrument types to fetch"
                 },
-                "client": {
-                    "$ref": "#/definitions/IConfigMarketDataClient",
-                    "description": "Market data client"
-                },
-                "toFetch": {
-                    "type": "object",
-                    "properties": {
-                        "instruments": {
-                            "type": "boolean"
-                        },
-                        "historicalPrices": {
-                            "type": "boolean"
-                        },
-                        "markets": {
-                            "type": "boolean"
-                        },
-                        "splits": {
-                            "type": "boolean"
-                        },
-                        "dividends": {
-                            "type": "boolean"
-                        },
-                        "memberships": {
-                            "type": "boolean"
-                        }
+                "clients": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IConfigFetcherClient"
                     },
-                    "additionalProperties": false,
-                    "description": "Entities to fetch. If missing, fetch all entities.  If present, only fetch the specified entities."
+                    "description": "Fetcher clients available for each domain"
                 }
             },
             "required": [
+                "prices",
+                "instruments",
+                "markets",
+                "calendar",
                 "instrumentTypes",
-                "client"
+                "clients"
             ],
             "additionalProperties": false,
             "description": "Fetcher configuration"
+        },
+        "IConfigFetcherEntity": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "enabled"
+            ],
+            "additionalProperties": false,
+            "description": "Simple enabled/disabled flag for a fetcher entity"
+        },
+        "IConfigFetcherCalendar": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "object",
+                    "properties": {
+                        "macroEvents": {
+                            "type": "boolean"
+                        },
+                        "earnings": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "macroEvents",
+                        "earnings"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Enabled calendar domains"
+                }
+            },
+            "required": [
+                "enabled"
+            ],
+            "additionalProperties": false,
+            "description": "Calendar fetcher configuration"
         },
         "InstrumentType": {
             "type": "string",
@@ -650,12 +688,23 @@
             ],
             "description": "Instrument type"
         },
-        "IConfigMarketDataClient": {
+        "IConfigFetcherClient": {
             "type": "object",
             "properties": {
-                "type": {
-                    "$ref": "#/definitions/MarketDataClientType",
-                    "description": "Market data client type"
+                "id": {
+                    "$ref": "#/definitions/FetcherClientId",
+                    "description": "Unique client identifier"
+                },
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Whether the client is active"
+                },
+                "for": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/FetcherClientPurpose"
+                    },
+                    "description": "Domains served by this client"
                 },
                 "rateLimit": {
                     "type": "object",
@@ -697,15 +746,32 @@
                 }
             },
             "required": [
-                "type"
+                "id",
+                "enabled",
+                "for"
             ],
             "additionalProperties": false,
-            "description": "Market data client configuration"
+            "description": "Fetcher client configuration"
         },
-        "MarketDataClientType": {
+        "FetcherClientId": {
             "type": "string",
-            "const": "massive",
-            "description": "Market Data Client Types"
+            "enum": [
+                "massive",
+                "fomc",
+                "bls",
+                "eodhd",
+                "alphaVantage"
+            ]
+        },
+        "FetcherClientPurpose": {
+            "type": "string",
+            "enum": [
+                "prices",
+                "instruments",
+                "markets",
+                "macroEvents",
+                "earnings"
+            ]
         }
     }
 }
