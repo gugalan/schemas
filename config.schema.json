@@ -121,7 +121,7 @@
                     "items": {
                         "type": "string"
                     },
-                    "description": "Pool ids selected from the global instrument pool catalog"
+                    "description": "Optional run-level pool ids selected from the global instrument pool catalog"
                 },
                 "symbols": {
                     "type": "array",
@@ -149,9 +149,6 @@
                     "description": "Symbols to explain across the latest snapshots; disabled automatically in fast backtests"
                 }
             },
-            "required": [
-                "poolIds"
-            ],
             "additionalProperties": false,
             "description": "Instrument universe configuration"
         },
@@ -398,10 +395,6 @@
                 "slippage": {
                     "$ref": "#/definitions/ICompositeDynamicValue",
                     "description": "Simulated slippage per trade"
-                },
-                "analyzeStrategiesPerformance": {
-                    "type": "boolean",
-                    "description": "Enable per-strategy performance analysis during backtests.  This is an additional analysis mode that creates a separate account for each strategy, in addition to the main account running all strategies. Each \"shadow\" account runs a single strategy with its own portfolio, allowing performance attribution without competition. This option increases memory usage and computation time."
                 },
                 "fastMode": {
                     "$ref": "#/definitions/IConfigBacktestFastMode",
