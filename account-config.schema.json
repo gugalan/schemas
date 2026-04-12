@@ -123,7 +123,6 @@
             "type": "string",
             "enum": [
                 "Argo_v1_0_0",
-                "Eos_v1_1_0",
                 "Eos_v2_0_3",
                 "Hermes_v1_0_0",
                 "Hermes_v1_1_0",
