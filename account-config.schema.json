@@ -12,6 +12,10 @@
                     "type": "string",
                     "description": "Account id"
                 },
+                "type": {
+                    "$ref": "#/definitions/TradingAccountType",
+                    "description": "Account type"
+                },
                 "active": {
                     "type": "boolean",
                     "description": "Whether the account is active"
@@ -23,12 +27,12 @@
                     },
                     "description": "Instrument pool ids that the account can use. If undefined, the account can use all instruments available in the context."
                 },
-                "strategyKeys": {
+                "strategySlugs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/StrategyRegistryKey"
+                        "$ref": "#/definitions/StrategySlug"
                     },
-                    "description": "Strategy keys that the account can use. If undefined, the account can use all active strategies."
+                    "description": "Strategy slugs that the account can use. If undefined, the account can use all configured strategy slugs."
                 },
                 "riskProfileId": {
                     "type": "string",
@@ -112,6 +116,7 @@
             },
             "required": [
                 "id",
+                "type",
                 "active",
                 "riskProfileId",
                 "currency",
@@ -119,16 +124,22 @@
             ],
             "additionalProperties": false
         },
-        "StrategyRegistryKey": {
+        "TradingAccountType": {
             "type": "string",
             "enum": [
-                "Argo_v1_0_0",
-                "Eos_v1_0_3",
-                "Hermes_v1_0_0",
-                "Hermes_v1_1_0",
-                "Janus_v1_0_0"
+                "paper",
+                "live"
+            ]
+        },
+        "StrategySlug": {
+            "type": "string",
+            "enum": [
+                "argo",
+                "eos",
+                "hermes",
+                "janus"
             ],
-            "description": "Strategy Registry Key Type"
+            "description": "Public production strategy slug type."
         },
         "ICompositeGroupPerInstrument": {
             "type": "object",

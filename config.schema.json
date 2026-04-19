@@ -35,9 +35,9 @@
                 "strategies": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/StrategyRegistryKey"
+                        "$ref": "#/definitions/StrategySlug"
                     },
-                    "description": "Strategies available"
+                    "description": "Production strategy slugs available to the trader runtime"
                 },
                 "instrumentUniverse": {
                     "$ref": "#/definitions/IConfigInstrumentUniverse",
@@ -101,16 +101,15 @@
             "additionalProperties": false,
             "description": "Trader configuration"
         },
-        "StrategyRegistryKey": {
+        "StrategySlug": {
             "type": "string",
             "enum": [
-                "Argo_v1_0_0",
-                "Eos_v1_0_3",
-                "Hermes_v1_0_0",
-                "Hermes_v1_1_0",
-                "Janus_v1_0_0"
+                "argo",
+                "eos",
+                "hermes",
+                "janus"
             ],
-            "description": "Strategy Registry Key Type"
+            "description": "Public production strategy slug type."
         },
         "IConfigInstrumentUniverse": {
             "type": "object",

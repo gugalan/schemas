@@ -1,0 +1,71 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$ref": "#/definitions/IStrategyCatalog",
+    "definitions": {
+        "IStrategyCatalog": {
+            "type": "object",
+            "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "strategies": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/IStrategyCatalogEntry"
+                        }
+                    },
+                    "description": "Catalog entries keyed by strategy slug."
+                }
+            },
+            "required": [
+                "strategies"
+            ],
+            "additionalProperties": false,
+            "description": "Strategy catalog persisted beside the backend config files."
+        },
+        "IStrategyCatalogEntry": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "type": "string",
+                    "description": "Semantic strategy version."
+                },
+                "statusChangedAt": {
+                    "type": "string",
+                    "description": "ISO timestamp when the deployment status was last updated."
+                },
+                "status": {
+                    "$ref": "#/definitions/StrategyCatalogStatus",
+                    "description": "Current production deployment status for the version."
+                }
+            },
+            "required": [
+                "version",
+                "statusChangedAt",
+                "status"
+            ],
+            "additionalProperties": false,
+            "description": "One production-stage deployment entry for a concrete strategy version."
+        },
+        "StrategyCatalogStatus": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/TradingAccountType"
+                },
+                {
+                    "type": "string",
+                    "const": "disabled"
+                }
+            ]
+        },
+        "TradingAccountType": {
+            "type": "string",
+            "enum": [
+                "paper",
+                "live"
+            ]
+        }
+    }
+}
