@@ -16,7 +16,7 @@
                             "$ref": "#/definitions/IStrategyCatalogEntry"
                         }
                     },
-                    "description": "Catalog entries keyed by strategy slug."
+                    "description": "Catalog entries keyed by strategy slug, composed as `<series>.<branch>`."
                 }
             },
             "required": [

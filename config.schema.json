@@ -37,7 +37,7 @@
                     "items": {
                         "$ref": "#/definitions/StrategySlug"
                     },
-                    "description": "Production strategy slugs available to the trader runtime"
+                    "description": "Production strategy slugs available to the trader runtime, composed as `<series>.<branch>`"
                 },
                 "instrumentUniverse": {
                     "$ref": "#/definitions/IConfigInstrumentUniverse",
@@ -104,10 +104,10 @@
         "StrategySlug": {
             "type": "string",
             "enum": [
-                "argo",
-                "eos",
-                "hermes",
-                "janus"
+                "argo.after-hours",
+                "eos.base",
+                "hermes.base",
+                "janus.base"
             ],
             "description": "Public production strategy slug type."
         },

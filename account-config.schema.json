@@ -32,7 +32,7 @@
                     "items": {
                         "$ref": "#/definitions/StrategySlug"
                     },
-                    "description": "Strategy slugs that the account can use. If undefined, the account can use all configured strategy slugs."
+                    "description": "Strategy slugs that the account can use. If undefined, the account can use all configured strategy slugs. Slugs are composed as `<series>.<branch>`."
                 },
                 "riskProfileId": {
                     "type": "string",
@@ -134,10 +134,10 @@
         "StrategySlug": {
             "type": "string",
             "enum": [
-                "argo",
-                "eos",
-                "hermes",
-                "janus"
+                "argo.after-hours",
+                "eos.base",
+                "hermes.base",
+                "janus.base"
             ],
             "description": "Public production strategy slug type."
         },
