@@ -42,6 +42,25 @@
                     "type": "string",
                     "description": "Account base currency"
                 },
+                "tax": {
+                    "type": "object",
+                    "properties": {
+                        "profileId": {
+                            "type": "string",
+                            "description": "Country-level tax profile id"
+                        },
+                        "collectionMode": {
+                            "$ref": "#/definitions/TaxCollectionMode",
+                            "description": "Universal collection mode used to decide how tax cash is paid"
+                        }
+                    },
+                    "required": [
+                        "profileId",
+                        "collectionMode"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Optional tax accounting configuration"
+                },
                 "leverage": {
                     "type": "object",
                     "properties": {
@@ -140,6 +159,14 @@
                 "janus.base"
             ],
             "description": "Public production strategy slug type."
+        },
+        "TaxCollectionMode": {
+            "type": "string",
+            "enum": [
+                "self_assessed",
+                "withheld_by_intermediary",
+                "none"
+            ]
         },
         "ICompositeGroupPerInstrument": {
             "type": "object",
