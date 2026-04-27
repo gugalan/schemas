@@ -182,6 +182,10 @@
                     "$ref": "#/definitions/ICompositeValue",
                     "description": "Max spread allowed to open; wider spreads skip the trade"
                 },
+                "maxDailyVolumeParticipationPerTrade": {
+                    "type": "number",
+                    "description": "Max fraction of recent daily volume that a new order may request."
+                },
                 "minSignalScore": {
                     "type": "number",
                     "description": "Minimum signal score required to place trades (0..1)"
