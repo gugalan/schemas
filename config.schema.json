@@ -16,15 +16,15 @@
                     "$ref": "#/definitions/IConfigTuner",
                     "description": "Tuner configuration"
                 },
-                "fetcher": {
-                    "$ref": "#/definitions/IConfigFetcher",
-                    "description": "Fetcher configuration"
+                "syncer": {
+                    "$ref": "#/definitions/IConfigSyncer",
+                    "description": "Syncer configuration"
                 }
             },
             "required": [
                 "trader",
                 "tuner",
-                "fetcher"
+                "syncer"
             ],
             "additionalProperties": false,
             "description": "Main configuration"
@@ -587,52 +587,44 @@
             "additionalProperties": false,
             "description": "Tuner configuration"
         },
-        "IConfigFetcher": {
+        "IConfigSyncer": {
             "type": "object",
             "properties": {
                 "prices": {
-                    "$ref": "#/definitions/IConfigFetcherEntity",
+                    "$ref": "#/definitions/IConfigSyncerEntity",
                     "description": "Whether price ingestion is enabled"
                 },
-                "instruments": {
-                    "$ref": "#/definitions/IConfigFetcherEntity",
-                    "description": "Whether instrument ingestion is enabled"
+                "instrumentPools": {
+                    "$ref": "#/definitions/IConfigSyncerEntity",
+                    "description": "Whether instrument pools ingestion is enabled"
                 },
                 "markets": {
-                    "$ref": "#/definitions/IConfigFetcherEntity",
+                    "$ref": "#/definitions/IConfigSyncerEntity",
                     "description": "Whether market ingestion is enabled"
                 },
                 "calendar": {
-                    "$ref": "#/definitions/IConfigFetcherCalendar",
+                    "$ref": "#/definitions/IConfigSyncerCalendar",
                     "description": "Calendar ingestion configuration"
-                },
-                "instrumentTypes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/InstrumentType"
-                    },
-                    "description": "Instrument types to fetch"
                 },
                 "clients": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/IConfigFetcherClient"
+                        "$ref": "#/definitions/IConfigSyncerClient"
                     },
-                    "description": "Fetcher clients available for each domain"
+                    "description": "Syncer clients available for each domain"
                 }
             },
             "required": [
                 "prices",
-                "instruments",
+                "instrumentPools",
                 "markets",
                 "calendar",
-                "instrumentTypes",
                 "clients"
             ],
             "additionalProperties": false,
-            "description": "Fetcher configuration"
+            "description": "Syncer configuration"
         },
-        "IConfigFetcherEntity": {
+        "IConfigSyncerEntity": {
             "type": "object",
             "properties": {
                 "enabled": {
@@ -643,9 +635,9 @@
                 "enabled"
             ],
             "additionalProperties": false,
-            "description": "Simple enabled/disabled flag for a fetcher entity"
+            "description": "Simple enabled/disabled flag for a syncer entity"
         },
-        "IConfigFetcherCalendar": {
+        "IConfigSyncerCalendar": {
             "type": "object",
             "properties": {
                 "enabled": {
@@ -670,25 +662,13 @@
                 "enabled"
             ],
             "additionalProperties": false,
-            "description": "Calendar fetcher configuration"
+            "description": "Calendar syncer configuration"
         },
-        "InstrumentType": {
-            "type": "string",
-            "enum": [
-                "stock",
-                "index",
-                "crypto",
-                "forex",
-                "future",
-                "option"
-            ],
-            "description": "Instrument type"
-        },
-        "IConfigFetcherClient": {
+        "IConfigSyncerClient": {
             "type": "object",
             "properties": {
                 "id": {
-                    "$ref": "#/definitions/FetcherClientId",
+                    "type": "string",
                     "description": "Unique client identifier"
                 },
                 "enabled": {
@@ -698,13 +678,9 @@
                 "for": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/FetcherClientPurpose"
+                        "$ref": "#/definitions/SyncerClientPurpose"
                     },
                     "description": "Domains served by this client"
-                },
-                "csvPath": {
-                    "type": "string",
-                    "description": "Optional local CSV file or directory path for clients that support CSV import"
                 },
                 "rateLimit": {
                     "type": "object",
@@ -751,20 +727,9 @@
                 "for"
             ],
             "additionalProperties": false,
-            "description": "Fetcher client configuration"
+            "description": "Syncer client configuration"
         },
-        "FetcherClientId": {
-            "type": "string",
-            "enum": [
-                "massive",
-                "databento",
-                "fomc",
-                "bls",
-                "eodhd",
-                "alphaVantage"
-            ]
-        },
-        "FetcherClientPurpose": {
+        "SyncerClientPurpose": {
             "type": "string",
             "enum": [
                 "prices",
