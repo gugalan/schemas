@@ -172,7 +172,7 @@
             "type": "object",
             "additionalProperties": {
                 "$ref": "#/definitions/ICompositeGroup",
-                "description": "Use ticker, instrument type or currency as key (E.g. AAPL, futures, USD). Use `*` for default values"
+                "description": "Use ticker, instrument type or currency as key (E.g. AAPL, future, USD). Use `*` for default values"
             },
             "description": "Symbol or instrument type values"
         },
