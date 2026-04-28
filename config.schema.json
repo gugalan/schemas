@@ -702,6 +702,10 @@
                     },
                     "description": "Domains served by this client"
                 },
+                "csvPath": {
+                    "type": "string",
+                    "description": "Optional local CSV file or directory path for clients that support CSV import"
+                },
                 "rateLimit": {
                     "type": "object",
                     "properties": {
@@ -753,6 +757,7 @@
             "type": "string",
             "enum": [
                 "massive",
+                "databento",
                 "fomc",
                 "bls",
                 "eodhd",
