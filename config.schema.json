@@ -286,6 +286,7 @@
                 "intraday.meanReversion",
                 "intraday.range",
                 "intraday.liquidity",
+                "intraday.futures",
                 "intraday.volatility",
                 "swing.trend",
                 "swing.breakout",
@@ -590,22 +591,6 @@
         "IConfigSyncer": {
             "type": "object",
             "properties": {
-                "prices": {
-                    "$ref": "#/definitions/IConfigSyncerEntity",
-                    "description": "Whether price ingestion is enabled"
-                },
-                "instrumentPools": {
-                    "$ref": "#/definitions/IConfigSyncerEntity",
-                    "description": "Whether instrument pools ingestion is enabled"
-                },
-                "markets": {
-                    "$ref": "#/definitions/IConfigSyncerEntity",
-                    "description": "Whether market ingestion is enabled"
-                },
-                "calendar": {
-                    "$ref": "#/definitions/IConfigSyncerCalendar",
-                    "description": "Calendar ingestion configuration"
-                },
                 "clients": {
                     "type": "array",
                     "items": {
@@ -615,54 +600,10 @@
                 }
             },
             "required": [
-                "prices",
-                "instrumentPools",
-                "markets",
-                "calendar",
                 "clients"
             ],
             "additionalProperties": false,
             "description": "Syncer configuration"
-        },
-        "IConfigSyncerEntity": {
-            "type": "object",
-            "properties": {
-                "enabled": {
-                    "type": "boolean"
-                }
-            },
-            "required": [
-                "enabled"
-            ],
-            "additionalProperties": false,
-            "description": "Simple enabled/disabled flag for a syncer entity"
-        },
-        "IConfigSyncerCalendar": {
-            "type": "object",
-            "properties": {
-                "enabled": {
-                    "type": "object",
-                    "properties": {
-                        "macroEvents": {
-                            "type": "boolean"
-                        },
-                        "earnings": {
-                            "type": "boolean"
-                        }
-                    },
-                    "required": [
-                        "macroEvents",
-                        "earnings"
-                    ],
-                    "additionalProperties": false,
-                    "description": "Enabled calendar domains"
-                }
-            },
-            "required": [
-                "enabled"
-            ],
-            "additionalProperties": false,
-            "description": "Calendar syncer configuration"
         },
         "IConfigSyncerClient": {
             "type": "object",
