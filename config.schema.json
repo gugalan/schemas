@@ -67,11 +67,11 @@
                 },
                 "backtest": {
                     "$ref": "#/definitions/IConfigBacktest",
-                    "description": "Backtest config"
+                    "description": "Backtest configuration"
                 },
                 "live": {
                     "$ref": "#/definitions/IConfigLiveTrading",
-                    "description": "Live trading config"
+                    "description": "Live trading configuration"
                 },
                 "notifications": {
                     "type": "object",
