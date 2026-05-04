@@ -399,9 +399,9 @@
                     "$ref": "#/definitions/ICompositeDynamicValue",
                     "description": "Simulated slippage per trade"
                 },
-                "fastMode": {
-                    "$ref": "#/definitions/IConfigBacktestFastMode",
-                    "description": "Optional fast-backtest mode. This preserves trading behavior but reduces audit and curve persistence to improve throughput."
+                "optimization": {
+                    "$ref": "#/definitions/IConfigBacktestOptimization",
+                    "description": "Optional optimization mode. This preserves trading behavior but reduces audit and curve persistence to improve throughput."
                 },
                 "profiling": {
                     "type": "boolean",
@@ -442,31 +442,24 @@
                 }
             ]
         },
-        "IConfigBacktestFastMode": {
+        "IConfigBacktestOptimization": {
             "type": "object",
             "properties": {
-                "active": {
+                "omitSignals": {
                     "type": "boolean",
-                    "description": "Enable fast-backtest mode"
+                    "description": "Omit signals table rows during the run"
                 },
-                "persistSignals": {
+                "omitNotifications": {
                     "type": "boolean",
-                    "description": "Persist signals table rows during the run"
+                    "description": "Omit notification log entries during the run"
                 },
-                "persistNotifications": {
+                "omitEquityCurve": {
                     "type": "boolean",
-                    "description": "Persist notification log entries during the run"
-                },
-                "persistEquityCurve": {
-                    "type": "boolean",
-                    "description": "Persist intermediate equity snapshots during the run"
+                    "description": "Omit intermediate equity snapshots during the run"
                 }
             },
-            "required": [
-                "active"
-            ],
             "additionalProperties": false,
-            "description": "Fast-backtest configuration"
+            "description": "Optimization configuration"
         },
         "JournalKind": {
             "type": "string",
@@ -651,7 +644,7 @@
                     "properties": {
                         "details": {
                             "type": "number",
-                            "description": "Maximum local age in days before ticker details are refreshed again"
+                            "description": "Maximum local age in days before symbol details are refreshed again"
                         },
                         "assets": {
                             "type": "number",
