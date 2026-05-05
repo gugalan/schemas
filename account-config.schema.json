@@ -153,10 +153,7 @@
         "StrategySlug": {
             "type": "string",
             "enum": [
-                "argo.after-hours",
-                "eos.base",
-                "hermes.base",
-                "janus.base"
+                "argo.base"
             ],
             "description": "Public production strategy slug type."
         },
