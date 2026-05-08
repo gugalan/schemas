@@ -152,9 +152,7 @@
         },
         "StrategySlug": {
             "type": "string",
-            "enum": [
-                "argo.base"
-            ],
+            "const": "argo.base",
             "description": "Public production strategy slug type."
         },
         "TaxCollectionMode": {

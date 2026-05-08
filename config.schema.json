@@ -103,9 +103,7 @@
         },
         "StrategySlug": {
             "type": "string",
-            "enum": [
-                "argo.base"
-            ],
+            "const": "argo.base",
             "description": "Public production strategy slug type."
         },
         "IConfigInstrumentUniverse": {
@@ -183,6 +181,10 @@
                     "type": "number",
                     "description": "Max fraction of recent daily volume that a new order may request."
                 },
+                "executionQuality": {
+                    "$ref": "#/definitions/IConfigAccountExecutionQuality",
+                    "description": "Execution-quality guardrails applied before entry orders are created."
+                },
                 "minSignalScore": {
                     "type": "number",
                     "description": "Minimum signal score required to place trades (0..1)"
@@ -216,6 +218,66 @@
                 "fixed",
                 "perc"
             ]
+        },
+        "IConfigAccountExecutionQuality": {
+            "type": "object",
+            "properties": {
+                "referenceTimeframe": {
+                    "$ref": "#/definitions/Timeframe",
+                    "description": "Intraday timeframe used to evaluate execution quality. Defaults to the smallest available intraday timeframe."
+                },
+                "minBarVolume": {
+                    "type": "number",
+                    "description": "Minimum volume required on the current execution bar."
+                },
+                "minBarTrades": {
+                    "type": "number",
+                    "description": "Minimum trade count required on the current execution bar."
+                },
+                "minRecentBars": {
+                    "type": "number",
+                    "description": "Number of recent execution bars that must exist and be continuous."
+                },
+                "maxBarGapFactor": {
+                    "type": "number",
+                    "description": "Maximum allowed gap between consecutive recent bars, expressed as a multiple of the reference timeframe."
+                },
+                "maxBarVolumeParticipation": {
+                    "type": "number",
+                    "description": "Max fraction of the current execution bar volume that a new order may request."
+                }
+            },
+            "additionalProperties": false,
+            "description": "Entry execution-quality constraints for account-level risk control"
+        },
+        "Timeframe": {
+            "type": "string",
+            "enum": [
+                "1S",
+                "5S",
+                "10S",
+                "30S",
+                "45S",
+                "1",
+                "2",
+                "3",
+                "5",
+                "10",
+                "15",
+                "30",
+                "45",
+                "60",
+                "120",
+                "180",
+                "240",
+                "1D",
+                "1W",
+                "1M",
+                "3M",
+                "6M",
+                "12M"
+            ],
+            "description": "Timeframe"
         },
         "IConfigStrategyRiskProfile": {
             "type": "object",
