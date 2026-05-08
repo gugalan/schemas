@@ -222,10 +222,6 @@
         "IConfigAccountExecutionQuality": {
             "type": "object",
             "properties": {
-                "referenceTimeframe": {
-                    "$ref": "#/definitions/Timeframe",
-                    "description": "Intraday timeframe used to evaluate execution quality. Defaults to the smallest available intraday timeframe."
-                },
                 "minBarVolume": {
                     "type": "number",
                     "description": "Minimum volume required on the current execution bar."
@@ -249,35 +245,6 @@
             },
             "additionalProperties": false,
             "description": "Entry execution-quality constraints for account-level risk control"
-        },
-        "Timeframe": {
-            "type": "string",
-            "enum": [
-                "1S",
-                "5S",
-                "10S",
-                "30S",
-                "45S",
-                "1",
-                "2",
-                "3",
-                "5",
-                "10",
-                "15",
-                "30",
-                "45",
-                "60",
-                "120",
-                "180",
-                "240",
-                "1D",
-                "1W",
-                "1M",
-                "3M",
-                "6M",
-                "12M"
-            ],
-            "description": "Timeframe"
         },
         "IConfigStrategyRiskProfile": {
             "type": "object",
