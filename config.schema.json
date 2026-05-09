@@ -181,9 +181,13 @@
                     "type": "number",
                     "description": "Max fraction of recent daily volume that a new order may request."
                 },
-                "executionQuality": {
-                    "$ref": "#/definitions/IConfigAccountExecutionQuality",
-                    "description": "Execution-quality guardrails applied before entry orders are created."
+                "minRecentExecutionBars": {
+                    "type": "number",
+                    "description": "Number of recent completed one-minute execution bars that must exist and be continuous before opening."
+                },
+                "maxExecutionBarGapFactor": {
+                    "type": "number",
+                    "description": "Maximum allowed gap between consecutive completed one-minute execution bars, expressed as a multiple of one minute."
                 },
                 "minSignalScore": {
                     "type": "number",
@@ -218,33 +222,6 @@
                 "fixed",
                 "perc"
             ]
-        },
-        "IConfigAccountExecutionQuality": {
-            "type": "object",
-            "properties": {
-                "minBarVolume": {
-                    "type": "number",
-                    "description": "Minimum volume required on the current execution bar."
-                },
-                "minBarTrades": {
-                    "type": "number",
-                    "description": "Minimum trade count required on the current execution bar."
-                },
-                "minRecentBars": {
-                    "type": "number",
-                    "description": "Number of recent execution bars that must exist and be continuous."
-                },
-                "maxBarGapFactor": {
-                    "type": "number",
-                    "description": "Maximum allowed gap between consecutive recent bars, expressed as a multiple of the reference timeframe."
-                },
-                "maxBarVolumeParticipation": {
-                    "type": "number",
-                    "description": "Max fraction of the current execution bar volume that a new order may request."
-                }
-            },
-            "additionalProperties": false,
-            "description": "Entry execution-quality constraints for account-level risk control"
         },
         "IConfigStrategyRiskProfile": {
             "type": "object",
