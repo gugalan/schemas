@@ -8,6 +8,10 @@
                 "$schema": {
                     "type": "string"
                 },
+                "miner": {
+                    "$ref": "#/definitions/IConfigMiner",
+                    "description": "Miner configuration"
+                },
                 "trader": {
                     "$ref": "#/definitions/IConfigTrader",
                     "description": "Trader configuration"
@@ -28,6 +32,47 @@
             ],
             "additionalProperties": false,
             "description": "Main configuration"
+        },
+        "IConfigMiner": {
+            "type": "object",
+            "properties": {
+                "kinds": {
+                    "type": "object",
+                    "properties": {
+                        "intraday": {
+                            "$ref": "#/definitions/IConfigMinerKind"
+                        },
+                        "swing": {
+                            "$ref": "#/definitions/IConfigMinerKind"
+                        },
+                        "position": {
+                            "$ref": "#/definitions/IConfigMinerKind"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "description": "Mining configuration by horizon kind"
+                }
+            },
+            "required": [
+                "kinds"
+            ],
+            "additionalProperties": false,
+            "description": "Miner configuration"
+        },
+        "IConfigMinerKind": {
+            "type": "object",
+            "properties": {
+                "minMovePerc": {
+                    "type": "number",
+                    "description": "Minimum absolute hindsight movement, expressed as a percentage of entry price.",
+                    "minimum": 0
+                }
+            },
+            "required": [
+                "minMovePerc"
+            ],
+            "additionalProperties": false,
+            "description": "Mining configuration for one horizon kind"
         },
         "IConfigTrader": {
             "type": "object",
@@ -468,7 +513,8 @@
             "type": "string",
             "enum": [
                 "standard",
-                "research"
+                "research",
+                "oracle"
             ]
         },
         "IConfigLiveTrading": {
