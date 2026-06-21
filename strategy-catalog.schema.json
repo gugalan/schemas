@@ -30,7 +30,7 @@
             "properties": {
                 "version": {
                     "type": "string",
-                    "description": "Semantic strategy version."
+                    "description": "Strategy version, formatted as `vN`."
                 },
                 "statusChangedAt": {
                     "type": "string",
