@@ -8,6 +8,10 @@
                 "$schema": {
                     "type": "string"
                 },
+                "importer": {
+                    "$ref": "#/definitions/IConfigImporter",
+                    "description": "Importer configuration"
+                },
                 "miner": {
                     "$ref": "#/definitions/IConfigMiner",
                     "description": "Miner configuration"
@@ -32,6 +36,67 @@
             ],
             "additionalProperties": false,
             "description": "Main configuration"
+        },
+        "IConfigImporter": {
+            "type": "object",
+            "properties": {
+                "alpaca": {
+                    "$ref": "#/definitions/IConfigImporterAlpaca",
+                    "description": "Alpaca importer configuration"
+                }
+            },
+            "additionalProperties": false,
+            "description": "Importer configuration"
+        },
+        "IConfigImporterAlpaca": {
+            "type": "object",
+            "properties": {
+                "feed": {
+                    "$ref": "#/definitions/AlpacaMarketDataFeed",
+                    "description": "Alpaca market data feed"
+                },
+                "rateLimit": {
+                    "$ref": "#/definitions/IConfigRateLimit",
+                    "description": "Rate limit configuration"
+                }
+            },
+            "required": [
+                "feed"
+            ],
+            "additionalProperties": false,
+            "description": "Alpaca importer configuration"
+        },
+        "AlpacaMarketDataFeed": {
+            "type": "string",
+            "enum": [
+                "iex",
+                "sip",
+                "otc",
+                "boats"
+            ]
+        },
+        "IConfigRateLimit": {
+            "type": "object",
+            "properties": {
+                "requests": {
+                    "type": "number",
+                    "description": "Maximum number of requests allowed within the window"
+                },
+                "windowMs": {
+                    "type": "number",
+                    "description": "Time window in milliseconds for the rate limit"
+                },
+                "minDelayMs": {
+                    "type": "number",
+                    "description": "Minimum delay in milliseconds between requests"
+                }
+            },
+            "required": [
+                "requests",
+                "windowMs"
+            ],
+            "additionalProperties": false,
+            "description": "Rate limit configuration"
         },
         "IConfigMiner": {
             "type": "object",
@@ -666,26 +731,7 @@
                     "description": "Domains served by this client"
                 },
                 "rateLimit": {
-                    "type": "object",
-                    "properties": {
-                        "requests": {
-                            "type": "number",
-                            "description": "Maximum number of requests allowed within the window"
-                        },
-                        "windowMs": {
-                            "type": "number",
-                            "description": "Time window in milliseconds for the rate limit"
-                        },
-                        "minDelayMs": {
-                            "type": "number",
-                            "description": "Minimum delay in milliseconds between requests"
-                        }
-                    },
-                    "required": [
-                        "requests",
-                        "windowMs"
-                    ],
-                    "additionalProperties": false,
+                    "$ref": "#/definitions/IConfigRateLimit",
                     "description": "Rate limit configuration"
                 },
                 "refreshDays": {
