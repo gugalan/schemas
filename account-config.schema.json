@@ -70,13 +70,13 @@
                         "index": {
                             "type": "number"
                         },
+                        "future": {
+                            "type": "number"
+                        },
                         "crypto": {
                             "type": "number"
                         },
                         "forex": {
-                            "type": "number"
-                        },
-                        "future": {
                             "type": "number"
                         },
                         "option": {

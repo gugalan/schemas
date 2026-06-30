@@ -189,6 +189,9 @@
                 },
                 "volatility": {
                     "$ref": "#/definitions/IInstrumentPoolDynamicVolatilityFilter"
+                },
+                "activity": {
+                    "$ref": "#/definitions/IInstrumentPoolDynamicActivityFilter"
                 }
             },
             "additionalProperties": false
@@ -231,12 +234,41 @@
             ],
             "additionalProperties": false
         },
+        "IInstrumentPoolDynamicActivityFilter": {
+            "type": "object",
+            "properties": {
+                "window": {
+                    "type": "string",
+                    "enum": [
+                        "prevday",
+                        "premarket"
+                    ]
+                },
+                "minDollarVolume": {
+                    "type": "number"
+                },
+                "minAbsMovePercent": {
+                    "type": "number"
+                },
+                "minRangePercent": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "window"
+            ],
+            "additionalProperties": false
+        },
         "IInstrumentPoolDynamicRanking": {
             "type": "object",
             "properties": {
                 "by": {
                     "type": "string",
-                    "const": "medianDollarVolume"
+                    "enum": [
+                        "medianDollarVolume",
+                        "activityDollarVolume",
+                        "activityScore"
+                    ]
                 },
                 "direction": {
                     "type": "string",

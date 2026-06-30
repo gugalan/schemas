@@ -16,12 +16,12 @@
                     "$ref": "#/definitions/IConfigTrader",
                     "description": "Trader configuration"
                 },
-                "services": {
+                "batchServices": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/definitions/IConfigService"
+                        "$ref": "#/definitions/IConfigBatchService"
                     },
-                    "description": "Third-party service configuration"
+                    "description": "Third-party batch service configuration used by scheduler and importers"
                 }
             },
             "required": [
@@ -171,30 +171,10 @@
                         "type": "string"
                     },
                     "description": "Symbols excluded globally from the resolved universe"
-                },
-                "rebalance": {
-                    "$ref": "#/definitions/IInstrumentUniverseRebalance",
-                    "description": "Rebalance cadence applied to dynamic pools; defaults to weekly when omitted"
-                },
-                "explainSymbols": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Symbols to explain across the latest snapshots; disabled automatically in fast backtests"
                 }
             },
             "additionalProperties": false,
             "description": "Instrument universe configuration"
-        },
-        "IInstrumentUniverseRebalance": {
-            "type": "string",
-            "enum": [
-                "daily",
-                "weekly",
-                "monthly"
-            ],
-            "description": "Instrument universe rebalance cadence"
         },
         "IConfigAccountRiskProfile": {
             "type": "object",
@@ -605,7 +585,7 @@
             ],
             "additionalProperties": false
         },
-        "IConfigService": {
+        "IConfigBatchService": {
             "type": "object",
             "properties": {
                 "rateLimit": {
@@ -619,22 +599,25 @@
                 }
             },
             "additionalProperties": false,
-            "description": "Third-party service configuration"
+            "description": "Third-party batch service configuration"
         },
         "IConfigRateLimit": {
             "type": "object",
             "properties": {
                 "requests": {
                     "type": "number",
-                    "description": "Maximum number of requests allowed within the window"
+                    "description": "Maximum number of requests allowed within the window",
+                    "minimum": 1
                 },
                 "windowMs": {
                     "type": "number",
-                    "description": "Time window in milliseconds for the rate limit"
+                    "description": "Time window in milliseconds for the rate limit",
+                    "minimum": 1
                 },
                 "minDelayMs": {
                     "type": "number",
-                    "description": "Minimum delay in milliseconds between requests"
+                    "description": "Minimum delay in milliseconds between requests",
+                    "minimum": 0
                 }
             },
             "required": [
