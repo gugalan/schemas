@@ -23,16 +23,11 @@
                 "tuner": {
                     "$ref": "#/definitions/IConfigTuner",
                     "description": "Tuner configuration"
-                },
-                "syncer": {
-                    "$ref": "#/definitions/IConfigSyncer",
-                    "description": "Syncer configuration"
                 }
             },
             "required": [
                 "trader",
-                "tuner",
-                "syncer"
+                "tuner"
             ],
             "additionalProperties": false,
             "description": "Main configuration"
@@ -694,79 +689,6 @@
             ],
             "additionalProperties": false,
             "description": "Tuner configuration"
-        },
-        "IConfigSyncer": {
-            "type": "object",
-            "properties": {
-                "clients": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/IConfigSyncerClient"
-                    },
-                    "description": "Syncer clients available for each domain"
-                }
-            },
-            "required": [
-                "clients"
-            ],
-            "additionalProperties": false,
-            "description": "Syncer configuration"
-        },
-        "IConfigSyncerClient": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string",
-                    "description": "Unique client identifier"
-                },
-                "enabled": {
-                    "type": "boolean",
-                    "description": "Whether the client is active"
-                },
-                "for": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/SyncerClientPurpose"
-                    },
-                    "description": "Domains served by this client"
-                },
-                "rateLimit": {
-                    "$ref": "#/definitions/IConfigRateLimit",
-                    "description": "Rate limit configuration"
-                },
-                "refreshDays": {
-                    "type": "object",
-                    "properties": {
-                        "details": {
-                            "type": "number",
-                            "description": "Maximum local age in days before symbol details are refreshed again"
-                        },
-                        "assets": {
-                            "type": "number",
-                            "description": "Maximum local age in days before branding assets are refreshed again"
-                        }
-                    },
-                    "additionalProperties": false,
-                    "description": "Optional maximum local age in days for cached data before refreshing from the source"
-                }
-            },
-            "required": [
-                "id",
-                "enabled",
-                "for"
-            ],
-            "additionalProperties": false,
-            "description": "Syncer client configuration"
-        },
-        "SyncerClientPurpose": {
-            "type": "string",
-            "enum": [
-                "prices",
-                "instruments",
-                "markets",
-                "macroEvents",
-                "earnings"
-            ]
         }
     }
 }
