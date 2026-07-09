@@ -75,6 +75,12 @@
                 "description": {
                     "type": "string"
                 },
+                "parent": {
+                    "type": "string"
+                },
+                "materialize": {
+                    "type": "boolean"
+                },
                 "kind": {
                     "type": "string",
                     "const": "manual"
@@ -106,6 +112,12 @@
                 "description": {
                     "type": "string"
                 },
+                "parent": {
+                    "type": "string"
+                },
+                "materialize": {
+                    "type": "boolean"
+                },
                 "kind": {
                     "type": "string",
                     "const": "dynamic"
@@ -124,7 +136,6 @@
                 }
             },
             "required": [
-                "base",
                 "id",
                 "kind"
             ],
@@ -138,6 +149,9 @@
                 },
                 {
                     "$ref": "#/definitions/IInstrumentPoolDynamicBaseCategory"
+                },
+                {
+                    "$ref": "#/definitions/IInstrumentPoolDynamicBaseCommonStocks"
                 }
             ]
         },
@@ -175,6 +189,19 @@
             ],
             "additionalProperties": false
         },
+        "IInstrumentPoolDynamicBaseCommonStocks": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "const": "common-stocks"
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "additionalProperties": false
+        },
         "IInstrumentPoolDynamicFilters": {
             "type": "object",
             "properties": {
@@ -182,6 +209,9 @@
                     "type": "string"
                 },
                 "minPrice": {
+                    "type": "number"
+                },
+                "maxPrice": {
                     "type": "number"
                 },
                 "liquidity": {
@@ -192,6 +222,9 @@
                 },
                 "activity": {
                     "$ref": "#/definitions/IInstrumentPoolDynamicActivityFilter"
+                },
+                "shareClassSharesOutstanding": {
+                    "$ref": "#/definitions/IInstrumentPoolDynamicShareClassSharesOutstandingFilter"
                 }
             },
             "additionalProperties": false
@@ -244,19 +277,52 @@
                         "premarket"
                     ]
                 },
+                "minPrice": {
+                    "type": "number"
+                },
+                "maxPrice": {
+                    "type": "number"
+                },
+                "minVolume": {
+                    "type": "number"
+                },
                 "minDollarVolume": {
                     "type": "number"
                 },
                 "minAbsMovePercent": {
                     "type": "number"
                 },
+                "minGapPercent": {
+                    "type": "number"
+                },
                 "minRangePercent": {
+                    "type": "number"
+                },
+                "minRelativeVolume": {
+                    "type": "number"
+                },
+                "relativeVolumeLookbackDays": {
+                    "type": "number"
+                },
+                "minVolumeShareClassSharesOutstandingMultiple": {
                     "type": "number"
                 }
             },
             "required": [
                 "window"
             ],
+            "additionalProperties": false
+        },
+        "IInstrumentPoolDynamicShareClassSharesOutstandingFilter": {
+            "type": "object",
+            "properties": {
+                "min": {
+                    "type": "number"
+                },
+                "max": {
+                    "type": "number"
+                }
+            },
             "additionalProperties": false
         },
         "IInstrumentPoolDynamicRanking": {
@@ -267,6 +333,7 @@
                     "enum": [
                         "medianDollarVolume",
                         "activityDollarVolume",
+                        "activityGapPercent",
                         "activityScore"
                     ]
                 },
@@ -325,6 +392,12 @@
                 },
                 "description": {
                     "type": "string"
+                },
+                "parent": {
+                    "type": "string"
+                },
+                "materialize": {
+                    "type": "boolean"
                 },
                 "kind": {
                     "type": "string",

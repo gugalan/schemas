@@ -103,6 +103,10 @@
                     "type": "number",
                     "description": "Max bars per timeframe cached in context (memory/perf trade-off)"
                 },
+                "avoidRoundShareQuantities": {
+                    "type": "boolean",
+                    "description": "Avoid stock entry order sizes ending in 0 or 5 by subtracting two shares"
+                },
                 "approachingSignals": {
                     "$ref": "#/definitions/IConfigApproachSignals",
                     "description": "Approaching (pre-trigger) signals configuration"
