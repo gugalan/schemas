@@ -410,6 +410,10 @@
         "IConfigBacktest": {
             "type": "object",
             "properties": {
+                "performanceScoreMode": {
+                    "$ref": "#/definitions/PerformanceScoreMode",
+                    "description": "Performance score policy frozen before the backtest starts"
+                },
                 "startDate": {
                     "type": "string",
                     "format": "date-time",
@@ -446,10 +450,18 @@
                 }
             },
             "required": [
+                "performanceScoreMode",
                 "initialCapital"
             ],
             "additionalProperties": false,
             "description": "Backtest configuration"
+        },
+        "PerformanceScoreMode": {
+            "type": "string",
+            "enum": [
+                "disabled",
+                "causal"
+            ]
         },
         "ICompositeDynamicValue": {
             "anyOf": [
@@ -501,12 +513,17 @@
         "IConfigLiveTrading": {
             "type": "object",
             "properties": {
+                "performanceScoreMode": {
+                    "$ref": "#/definitions/PerformanceScoreMode",
+                    "description": "Performance score policy frozen when the live trader starts or restarts"
+                },
                 "warmUpBarsCount": {
                     "type": "number",
                     "description": "Number of bars to warm up the context before starting live trading"
                 }
             },
             "required": [
+                "performanceScoreMode",
                 "warmUpBarsCount"
             ],
             "additionalProperties": false,
