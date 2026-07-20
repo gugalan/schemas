@@ -1,87 +1,472 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$ref": "#/definitions/IConfig",
+    "$ref": "#/definitions/IEffectiveConfigSnapshot",
     "definitions": {
-        "IConfig": {
+        "IEffectiveConfigSnapshot": {
             "type": "object",
             "properties": {
                 "$schema": {
                     "type": "string"
                 },
-                "miner": {
-                    "$ref": "#/definitions/IConfigMiner",
-                    "description": "Miner configuration"
+                "accounts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ITradingAccount"
+                    }
+                },
+                "strategyBindings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IEffectiveAccountStrategyBinding"
+                    }
+                },
+                "taxProfiles": {
+                    "$ref": "#/definitions/ITaxProfileCatalog"
                 },
                 "trader": {
-                    "$ref": "#/definitions/IConfigTrader",
-                    "description": "Trader configuration"
-                },
-                "batchServices": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/IConfigBatchService"
-                    },
-                    "description": "Third-party batch service configuration used by scheduler and importers"
+                    "$ref": "#/definitions/IRuntimeTraderConfig"
                 }
             },
             "required": [
+                "accounts",
+                "strategyBindings",
+                "taxProfiles",
                 "trader"
             ],
             "additionalProperties": false,
-            "description": "Main configuration"
+            "description": "Immutable, credential-free runtime inputs persisted with a journal."
         },
-        "IConfigMiner": {
+        "ITradingAccount": {
             "type": "object",
             "properties": {
-                "kinds": {
-                    "type": "object",
-                    "properties": {
-                        "intraday": {
-                            "$ref": "#/definitions/IConfigMinerKind"
-                        },
-                        "swing": {
-                            "$ref": "#/definitions/IConfigMinerKind"
-                        },
-                        "position": {
-                            "$ref": "#/definitions/IConfigMinerKind"
-                        }
+                "$schema": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "description": "Account id"
+                },
+                "type": {
+                    "$ref": "#/definitions/TradingAccountType",
+                    "description": "Account type"
+                },
+                "active": {
+                    "type": "boolean",
+                    "description": "Whether the account is active"
+                },
+                "instrumentPoolIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     },
-                    "additionalProperties": false,
-                    "description": "Mining configuration by horizon kind"
-                }
-            },
-            "required": [
-                "kinds"
-            ],
-            "additionalProperties": false,
-            "description": "Miner configuration"
-        },
-        "IConfigMinerKind": {
-            "type": "object",
-            "properties": {
-                "minMovePerc": {
-                    "type": "number",
-                    "description": "Minimum absolute hindsight movement as a ratio of entry price, where 1 is 100%.",
-                    "minimum": 0,
-                    "maximum": 1
-                }
-            },
-            "required": [
-                "minMovePerc"
-            ],
-            "additionalProperties": false,
-            "description": "Mining configuration for one horizon kind"
-        },
-        "IConfigTrader": {
-            "type": "object",
-            "properties": {
-                "strategies": {
+                    "description": "Instrument pool ids that the account can use. If undefined, the account can use all instruments available in the context."
+                },
+                "strategySlugs": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/StrategySlug"
                     },
-                    "description": "Production strategy slugs available to the trader runtime, composed as `<series>.<branch>`"
+                    "description": "Strategy slugs that the account can use. If undefined, the account can use all configured strategy slugs. Slugs are composed as `<series>.<branch>`."
                 },
+                "riskProfileId": {
+                    "type": "string",
+                    "description": "Risk profile id to use"
+                },
+                "currency": {
+                    "$ref": "#/definitions/CurrencyCode",
+                    "description": "Account base currency"
+                },
+                "tax": {
+                    "type": "object",
+                    "properties": {
+                        "profileId": {
+                            "type": "string",
+                            "description": "Country-level tax profile id"
+                        },
+                        "collectionMode": {
+                            "$ref": "#/definitions/TaxCollectionMode",
+                            "description": "Universal collection mode used to decide how tax cash is paid"
+                        }
+                    },
+                    "required": [
+                        "profileId",
+                        "collectionMode"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Optional tax accounting configuration"
+                },
+                "leverage": {
+                    "type": "object",
+                    "properties": {
+                        "stock": {
+                            "type": "number"
+                        },
+                        "index": {
+                            "type": "number"
+                        },
+                        "future": {
+                            "type": "number"
+                        },
+                        "crypto": {
+                            "type": "number"
+                        },
+                        "forex": {
+                            "type": "number"
+                        },
+                        "option": {
+                            "type": "number"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "description": "Leverage per margined instrument type. Non-margined instruments are always cash-settled in full."
+                },
+                "initialMarginPerContract": {
+                    "type": "object",
+                    "properties": {
+                        "long": {
+                            "$ref": "#/definitions/ICompositeGroupPerInstrument"
+                        },
+                        "short": {
+                            "$ref": "#/definitions/ICompositeGroupPerInstrument"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "description": "Initial margin requirement per contract side; fixed values are account-currency amounts and `perc` values are ratios of local contract price."
+                },
+                "maintenanceMarginPerContract": {
+                    "type": "object",
+                    "properties": {
+                        "long": {
+                            "$ref": "#/definitions/ICompositeGroupPerInstrument"
+                        },
+                        "short": {
+                            "$ref": "#/definitions/ICompositeGroupPerInstrument"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "description": "Maintenance margin requirement per contract side; fixed values are account-currency amounts and `perc` values are ratios of local contract price."
+                },
+                "exchangeCommission": {
+                    "$ref": "#/definitions/ICompositeGroup",
+                    "description": "Commission applied when converting from source currency to account currency"
+                },
+                "commissionPerOrder": {
+                    "$ref": "#/definitions/ICompositeGroupPerInstrument",
+                    "description": "Commission per order side (charged twice for round-trip)"
+                },
+                "commissionPerContract": {
+                    "$ref": "#/definitions/ICompositeGroupPerInstrument",
+                    "description": "Commission per contract"
+                },
+                "allowMarketOrdersInExtendedHours": {
+                    "type": "boolean",
+                    "description": "Allow market orders in extended hours sessions"
+                },
+                "brokerAccount": {
+                    "$ref": "#/definitions/IBrokerAccount",
+                    "description": "Linked broker account information"
+                }
+            },
+            "required": [
+                "id",
+                "type",
+                "active",
+                "riskProfileId",
+                "currency",
+                "brokerAccount"
+            ],
+            "additionalProperties": false
+        },
+        "TradingAccountType": {
+            "type": "string",
+            "enum": [
+                "paper",
+                "live"
+            ]
+        },
+        "StrategySlug": {
+            "type": "string",
+            "const": "argo.base",
+            "description": "Public production strategy slug type."
+        },
+        "CurrencyCode": {
+            "type": "string",
+            "enum": [
+                "AUD",
+                "BGN",
+                "BRL",
+                "CAD",
+                "CHF",
+                "CNY",
+                "CZK",
+                "DKK",
+                "EUR",
+                "GBP",
+                "HKD",
+                "HUF",
+                "IDR",
+                "ILS",
+                "INR",
+                "ISK",
+                "JPY",
+                "KRW",
+                "MXN",
+                "MYR",
+                "NOK",
+                "NZD",
+                "PHP",
+                "PLN",
+                "RON",
+                "SEK",
+                "SGD",
+                "THB",
+                "TRY",
+                "USD",
+                "ZAR"
+            ]
+        },
+        "TaxCollectionMode": {
+            "type": "string",
+            "enum": [
+                "self_assessed",
+                "withheld_by_intermediary",
+                "none"
+            ]
+        },
+        "ICompositeGroupPerInstrument": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/ICompositeGroup",
+                "description": "Use symbol, instrument type or currency as key (E.g. AAPL, future, USD). Use `*` for default values"
+            },
+            "description": "Symbol or instrument type values"
+        },
+        "ICompositeGroup": {
+            "type": "object",
+            "properties": {
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ICompositeValue"
+                    }
+                },
+                "minimum": {
+                    "$ref": "#/definitions/ICompositeValue"
+                },
+                "maximum": {
+                    "$ref": "#/definitions/ICompositeValue"
+                }
+            },
+            "required": [
+                "values"
+            ],
+            "additionalProperties": false
+        },
+        "ICompositeValue": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "number"
+                },
+                "type": {
+                    "$ref": "#/definitions/IValueKind",
+                    "description": "Default is \"fixed\""
+                }
+            },
+            "required": [
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "IValueKind": {
+            "type": "string",
+            "enum": [
+                "fixed",
+                "perc"
+            ]
+        },
+        "IBrokerAccount": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Broker account id"
+                },
+                "accountNumber": {
+                    "type": "string",
+                    "description": "Broker account number"
+                },
+                "type": {
+                    "$ref": "#/definitions/BrokerType",
+                    "description": "Broker type"
+                },
+                "apiKey": {
+                    "type": "string",
+                    "description": "Broker-specific configuration"
+                },
+                "apiSecret": {
+                    "type": "string"
+                },
+                "allowShorting": {
+                    "type": "boolean",
+                    "description": "Whether opening short positions is permitted"
+                }
+            },
+            "required": [
+                "id",
+                "type"
+            ],
+            "additionalProperties": false
+        },
+        "BrokerType": {
+            "type": "string",
+            "enum": [
+                "alpaca",
+                "interactiveBrokers",
+                "simulated"
+            ]
+        },
+        "IEffectiveAccountStrategyBinding": {
+            "type": "object",
+            "properties": {
+                "accountId": {
+                    "type": "string"
+                },
+                "strategies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IEffectiveStrategyBinding"
+                    }
+                }
+            },
+            "required": [
+                "accountId",
+                "strategies"
+            ],
+            "additionalProperties": false,
+            "description": "Concrete strategies resolved for one active account at run start."
+        },
+        "IEffectiveStrategyBinding": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "riskProfileId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "key",
+                "riskProfileId"
+            ],
+            "additionalProperties": false,
+            "description": "Immutable strategy identity and risk binding used by one run."
+        },
+        "ITaxProfileCatalog": {
+            "type": "object",
+            "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "profiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ITaxProfile"
+                    },
+                    "description": "Tax profiles available to trading accounts"
+                }
+            },
+            "required": [
+                "profiles"
+            ],
+            "additionalProperties": false
+        },
+        "ITaxProfile": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Country-level profile id, normally the ISO 3166-1 alpha-2 country code"
+                },
+                "country": {
+                    "type": "string",
+                    "description": "ISO 3166-1 alpha-2 country code"
+                },
+                "versions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ITaxProfileVersion"
+                    },
+                    "description": "Versioned tax settings for this profile"
+                }
+            },
+            "required": [
+                "id",
+                "country",
+                "versions"
+            ],
+            "additionalProperties": false
+        },
+        "ITaxProfileVersion": {
+            "type": "object",
+            "properties": {
+                "validFrom": {
+                    "type": "string",
+                    "description": "First calendar date covered by this tax profile version"
+                },
+                "validTo": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Last calendar date covered by this tax profile version; null means still valid"
+                },
+                "taxYear": {
+                    "$ref": "#/definitions/ITaxYearConfig",
+                    "description": "Tax year calendar used by this country profile"
+                },
+                "realizedProfitTaxRate": {
+                    "type": "number",
+                    "description": "Tax rate applied to positive net realized PnL"
+                },
+                "lossCarryForwardYears": {
+                    "type": "number",
+                    "description": "Number of tax years where losses may be carried forward"
+                }
+            },
+            "required": [
+                "validFrom",
+                "taxYear",
+                "realizedProfitTaxRate"
+            ],
+            "additionalProperties": false
+        },
+        "ITaxYearConfig": {
+            "type": "object",
+            "properties": {
+                "startMonth": {
+                    "type": "number",
+                    "description": "Month when the tax year starts, using 1 for January and 12 for December"
+                },
+                "startDay": {
+                    "type": "number",
+                    "description": "Day of month when the tax year starts"
+                }
+            },
+            "required": [
+                "startMonth",
+                "startDay"
+            ],
+            "additionalProperties": false
+        },
+        "IRuntimeTraderConfig": {
+            "type": "object",
+            "properties": {
                 "instrumentUniverse": {
                     "$ref": "#/definitions/IConfigInstrumentUniverse",
                     "description": "Instrument universe requested by the trader config"
@@ -132,26 +517,28 @@
                     },
                     "additionalProperties": false,
                     "description": "Notification channels keyed by type"
+                },
+                "strategies": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Strategy slugs or concrete runtime strategy identifiers selected for this run"
                 }
             },
             "required": [
-                "strategies",
-                "instrumentUniverse",
                 "accountRiskProfiles",
-                "strategyRiskProfiles",
-                "maxContextBars",
                 "approachingSignals",
                 "backtest",
+                "instrumentUniverse",
                 "live",
-                "notifications"
+                "maxContextBars",
+                "notifications",
+                "strategies",
+                "strategyRiskProfiles"
             ],
             "additionalProperties": false,
-            "description": "Trader configuration"
-        },
-        "StrategySlug": {
-            "type": "string",
-            "const": "argo.base",
-            "description": "Public production strategy slug type."
+            "description": "Trader configuration after a runtime entry point selects registered strategy identifiers."
         },
         "IConfigInstrumentUniverse": {
             "type": "object",
@@ -230,29 +617,6 @@
             ],
             "additionalProperties": false,
             "description": "Account risk profile configuration"
-        },
-        "ICompositeValue": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "number"
-                },
-                "type": {
-                    "$ref": "#/definitions/IValueKind",
-                    "description": "Default is \"fixed\""
-                }
-            },
-            "required": [
-                "value"
-            ],
-            "additionalProperties": false
-        },
-        "IValueKind": {
-            "type": "string",
-            "enum": [
-                "fixed",
-                "perc"
-            ]
         },
         "IConfigStrategyRiskProfile": {
             "type": "object",
@@ -604,48 +968,6 @@
                 "chatIds"
             ],
             "additionalProperties": false
-        },
-        "IConfigBatchService": {
-            "type": "object",
-            "properties": {
-                "rateLimit": {
-                    "$ref": "#/definitions/IConfigRateLimit",
-                    "description": "Rate limit configuration"
-                },
-                "meta": {
-                    "type": "object",
-                    "additionalProperties": {},
-                    "description": "Any additional metadata to associate with this service configuration"
-                }
-            },
-            "additionalProperties": false,
-            "description": "Third-party batch service configuration"
-        },
-        "IConfigRateLimit": {
-            "type": "object",
-            "properties": {
-                "requests": {
-                    "type": "number",
-                    "description": "Maximum number of requests allowed within the window",
-                    "minimum": 1
-                },
-                "windowMs": {
-                    "type": "number",
-                    "description": "Time window in milliseconds for the rate limit",
-                    "minimum": 1
-                },
-                "minDelayMs": {
-                    "type": "number",
-                    "description": "Minimum delay in milliseconds between requests",
-                    "minimum": 0
-                }
-            },
-            "required": [
-                "requests",
-                "windowMs"
-            ],
-            "additionalProperties": false,
-            "description": "Rate limit configuration"
         }
     }
 }

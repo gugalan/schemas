@@ -1,20 +1,13 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$ref": "#/definitions/IConfig",
+    "$ref": "#/definitions/IRuntimeConfig",
     "definitions": {
-        "IConfig": {
+        "IRuntimeConfig": {
             "type": "object",
             "properties": {
-                "$schema": {
-                    "type": "string"
-                },
                 "miner": {
                     "$ref": "#/definitions/IConfigMiner",
                     "description": "Miner configuration"
-                },
-                "trader": {
-                    "$ref": "#/definitions/IConfigTrader",
-                    "description": "Trader configuration"
                 },
                 "batchServices": {
                     "type": "object",
@@ -22,13 +15,20 @@
                         "$ref": "#/definitions/IConfigBatchService"
                     },
                     "description": "Third-party batch service configuration used by scheduler and importers"
+                },
+                "$schema": {
+                    "type": "string"
+                },
+                "trader": {
+                    "$ref": "#/definitions/IRuntimeTraderConfig",
+                    "description": "Trader configuration with runtime strategy identifiers"
                 }
             },
             "required": [
                 "trader"
             ],
             "additionalProperties": false,
-            "description": "Main configuration"
+            "description": "Application configuration after a runtime entry point selects a registered strategy."
         },
         "IConfigMiner": {
             "type": "object",
@@ -72,16 +72,51 @@
             "additionalProperties": false,
             "description": "Mining configuration for one horizon kind"
         },
-        "IConfigTrader": {
+        "IConfigBatchService": {
             "type": "object",
             "properties": {
-                "strategies": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/StrategySlug"
-                    },
-                    "description": "Production strategy slugs available to the trader runtime, composed as `<series>.<branch>`"
+                "rateLimit": {
+                    "$ref": "#/definitions/IConfigRateLimit",
+                    "description": "Rate limit configuration"
                 },
+                "meta": {
+                    "type": "object",
+                    "additionalProperties": {},
+                    "description": "Any additional metadata to associate with this service configuration"
+                }
+            },
+            "additionalProperties": false,
+            "description": "Third-party batch service configuration"
+        },
+        "IConfigRateLimit": {
+            "type": "object",
+            "properties": {
+                "requests": {
+                    "type": "number",
+                    "description": "Maximum number of requests allowed within the window",
+                    "minimum": 1
+                },
+                "windowMs": {
+                    "type": "number",
+                    "description": "Time window in milliseconds for the rate limit",
+                    "minimum": 1
+                },
+                "minDelayMs": {
+                    "type": "number",
+                    "description": "Minimum delay in milliseconds between requests",
+                    "minimum": 0
+                }
+            },
+            "required": [
+                "requests",
+                "windowMs"
+            ],
+            "additionalProperties": false,
+            "description": "Rate limit configuration"
+        },
+        "IRuntimeTraderConfig": {
+            "type": "object",
+            "properties": {
                 "instrumentUniverse": {
                     "$ref": "#/definitions/IConfigInstrumentUniverse",
                     "description": "Instrument universe requested by the trader config"
@@ -132,26 +167,28 @@
                     },
                     "additionalProperties": false,
                     "description": "Notification channels keyed by type"
+                },
+                "strategies": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Strategy slugs or concrete runtime strategy identifiers selected for this run"
                 }
             },
             "required": [
-                "strategies",
-                "instrumentUniverse",
                 "accountRiskProfiles",
-                "strategyRiskProfiles",
-                "maxContextBars",
                 "approachingSignals",
                 "backtest",
+                "instrumentUniverse",
                 "live",
-                "notifications"
+                "maxContextBars",
+                "notifications",
+                "strategies",
+                "strategyRiskProfiles"
             ],
             "additionalProperties": false,
-            "description": "Trader configuration"
-        },
-        "StrategySlug": {
-            "type": "string",
-            "const": "argo.base",
-            "description": "Public production strategy slug type."
+            "description": "Trader configuration after a runtime entry point selects registered strategy identifiers."
         },
         "IConfigInstrumentUniverse": {
             "type": "object",
@@ -604,48 +641,6 @@
                 "chatIds"
             ],
             "additionalProperties": false
-        },
-        "IConfigBatchService": {
-            "type": "object",
-            "properties": {
-                "rateLimit": {
-                    "$ref": "#/definitions/IConfigRateLimit",
-                    "description": "Rate limit configuration"
-                },
-                "meta": {
-                    "type": "object",
-                    "additionalProperties": {},
-                    "description": "Any additional metadata to associate with this service configuration"
-                }
-            },
-            "additionalProperties": false,
-            "description": "Third-party batch service configuration"
-        },
-        "IConfigRateLimit": {
-            "type": "object",
-            "properties": {
-                "requests": {
-                    "type": "number",
-                    "description": "Maximum number of requests allowed within the window",
-                    "minimum": 1
-                },
-                "windowMs": {
-                    "type": "number",
-                    "description": "Time window in milliseconds for the rate limit",
-                    "minimum": 1
-                },
-                "minDelayMs": {
-                    "type": "number",
-                    "description": "Minimum delay in milliseconds between requests",
-                    "minimum": 0
-                }
-            },
-            "required": [
-                "requests",
-                "windowMs"
-            ],
-            "additionalProperties": false,
-            "description": "Rate limit configuration"
         }
     }
 }
