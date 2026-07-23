@@ -35,6 +35,10 @@
                     "type": "string",
                     "description": "Risk profile id to use"
                 },
+                "riskDay": {
+                    "$ref": "#/definitions/IAccountRiskDayPolicy",
+                    "description": "Account-owned daily risk reset policy"
+                },
                 "tax": {
                     "type": "object",
                     "properties": {
@@ -138,6 +142,7 @@
                 "brokerAccount",
                 "currency",
                 "id",
+                "riskDay",
                 "riskProfileId",
                 "type"
             ],
@@ -155,6 +160,25 @@
             "type": "string",
             "const": "argo.base",
             "description": "Public production strategy slug type."
+        },
+        "IAccountRiskDayPolicy": {
+            "type": "object",
+            "properties": {
+                "boundary": {
+                    "type": "number",
+                    "description": "Local boundary encoded as HHMM, where 0 is midnight and 1730 is 17:30"
+                },
+                "timeZone": {
+                    "type": "string",
+                    "description": "IANA timezone used to interpret the boundary"
+                }
+            },
+            "required": [
+                "boundary",
+                "timeZone"
+            ],
+            "additionalProperties": false,
+            "description": "Account-owned boundary used to reset daily risk state independently from instrument sessions."
         },
         "TaxCollectionMode": {
             "type": "string",

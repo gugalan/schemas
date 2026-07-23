@@ -1,0 +1,63 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$ref": "#/definitions/IInstrumentSessionProfileCatalog",
+    "definitions": {
+        "IInstrumentSessionProfileCatalog": {
+            "type": "object",
+            "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "profiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IInstrumentSessionProfile"
+                    }
+                }
+            },
+            "required": [
+                "profiles"
+            ],
+            "additionalProperties": false,
+            "description": "Versioned market-hours profiles available to instrument metadata."
+        },
+        "IInstrumentSessionProfile": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Stable session profile identifier."
+                },
+                "timeZone": {
+                    "type": "string",
+                    "description": "IANA timezone owning the local session clock."
+                },
+                "start": {
+                    "$ref": "#/definitions/HHMM",
+                    "description": "Inclusive local session start in HHMM format."
+                },
+                "end": {
+                    "$ref": "#/definitions/HHMM",
+                    "description": "Exclusive local session end in HHMM format."
+                },
+                "sessionDateConvention": {
+                    "type": "string",
+                    "const": "closeDate",
+                    "description": "Instrument sessions are labeled by the local date on which they close."
+                }
+            },
+            "required": [
+                "id",
+                "timeZone",
+                "start",
+                "end",
+                "sessionDateConvention"
+            ],
+            "additionalProperties": false,
+            "description": "Canonical metadata required to resolve one instrument's trading sessions."
+        },
+        "HHMM": {
+            "type": "number"
+        }
+    }
+}

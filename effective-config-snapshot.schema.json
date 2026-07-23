@@ -14,6 +14,9 @@
                         "$ref": "#/definitions/ITradingAccount"
                     }
                 },
+                "instrumentSessionProfiles": {
+                    "$ref": "#/definitions/IInstrumentSessionProfileCatalog"
+                },
                 "strategyBindings": {
                     "type": "array",
                     "items": {
@@ -29,6 +32,7 @@
             },
             "required": [
                 "accounts",
+                "instrumentSessionProfiles",
                 "strategyBindings",
                 "taxProfiles",
                 "trader"
@@ -71,6 +75,10 @@
                 "riskProfileId": {
                     "type": "string",
                     "description": "Risk profile id to use"
+                },
+                "riskDay": {
+                    "$ref": "#/definitions/IAccountRiskDayPolicy",
+                    "description": "Account-owned daily risk reset policy"
                 },
                 "currency": {
                     "$ref": "#/definitions/CurrencyCode",
@@ -172,6 +180,7 @@
                 "type",
                 "active",
                 "riskProfileId",
+                "riskDay",
                 "currency",
                 "brokerAccount"
             ],
@@ -188,6 +197,25 @@
             "type": "string",
             "const": "argo.base",
             "description": "Public production strategy slug type."
+        },
+        "IAccountRiskDayPolicy": {
+            "type": "object",
+            "properties": {
+                "boundary": {
+                    "type": "number",
+                    "description": "Local boundary encoded as HHMM, where 0 is midnight and 1730 is 17:30"
+                },
+                "timeZone": {
+                    "type": "string",
+                    "description": "IANA timezone used to interpret the boundary"
+                }
+            },
+            "required": [
+                "boundary",
+                "timeZone"
+            ],
+            "additionalProperties": false,
+            "description": "Account-owned boundary used to reset daily risk state independently from instrument sessions."
         },
         "CurrencyCode": {
             "type": "string",
@@ -326,6 +354,63 @@
                 "simulated"
             ]
         },
+        "IInstrumentSessionProfileCatalog": {
+            "type": "object",
+            "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "profiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IInstrumentSessionProfile"
+                    }
+                }
+            },
+            "required": [
+                "profiles"
+            ],
+            "additionalProperties": false,
+            "description": "Versioned market-hours profiles available to instrument metadata."
+        },
+        "IInstrumentSessionProfile": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Stable session profile identifier."
+                },
+                "timeZone": {
+                    "type": "string",
+                    "description": "IANA timezone owning the local session clock."
+                },
+                "start": {
+                    "$ref": "#/definitions/HHMM",
+                    "description": "Inclusive local session start in HHMM format."
+                },
+                "end": {
+                    "$ref": "#/definitions/HHMM",
+                    "description": "Exclusive local session end in HHMM format."
+                },
+                "sessionDateConvention": {
+                    "type": "string",
+                    "const": "closeDate",
+                    "description": "Instrument sessions are labeled by the local date on which they close."
+                }
+            },
+            "required": [
+                "id",
+                "timeZone",
+                "start",
+                "end",
+                "sessionDateConvention"
+            ],
+            "additionalProperties": false,
+            "description": "Canonical metadata required to resolve one instrument's trading sessions."
+        },
+        "HHMM": {
+            "type": "number"
+        },
         "IEffectiveAccountStrategyBinding": {
             "type": "object",
             "properties": {
@@ -397,6 +482,10 @@
                     "type": "string",
                     "description": "ISO 3166-1 alpha-2 country code"
                 },
+                "timeZone": {
+                    "type": "string",
+                    "description": "IANA timezone used to assign civil dates and tax years"
+                },
                 "versions": {
                     "type": "array",
                     "items": {
@@ -408,6 +497,7 @@
             "required": [
                 "id",
                 "country",
+                "timeZone",
                 "versions"
             ],
             "additionalProperties": false
@@ -424,7 +514,7 @@
                         "string",
                         "null"
                     ],
-                    "description": "Last calendar date covered by this tax profile version; null means still valid"
+                    "description": "Exclusive calendar-date boundary for this tax profile version; null means still valid"
                 },
                 "taxYear": {
                     "$ref": "#/definitions/ITaxYearConfig",
