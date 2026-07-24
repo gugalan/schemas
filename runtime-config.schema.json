@@ -599,7 +599,7 @@
                 "webhook",
                 "telegram"
             ],
-            "description": "Gugalanna Copyright (c) Daniele Perilli"
+            "description": "Gugalana Copyright (c) Daniele Perilli"
         },
         "INotificationConfigWebhook": {
             "type": "object",
