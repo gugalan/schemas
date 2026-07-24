@@ -103,31 +103,6 @@
                     "additionalProperties": false,
                     "description": "Optional tax accounting configuration"
                 },
-                "leverage": {
-                    "type": "object",
-                    "properties": {
-                        "stock": {
-                            "type": "number"
-                        },
-                        "index": {
-                            "type": "number"
-                        },
-                        "future": {
-                            "type": "number"
-                        },
-                        "crypto": {
-                            "type": "number"
-                        },
-                        "forex": {
-                            "type": "number"
-                        },
-                        "option": {
-                            "type": "number"
-                        }
-                    },
-                    "additionalProperties": false,
-                    "description": "Leverage per margined instrument type. Non-margined instruments are always cash-settled in full."
-                },
                 "initialMarginPerContract": {
                     "type": "object",
                     "properties": {
@@ -139,7 +114,7 @@
                         }
                     },
                     "additionalProperties": false,
-                    "description": "Initial margin requirement per contract side; fixed values are account-currency amounts and `perc` values are ratios of local contract price."
+                    "description": "Initial margin requirement per contract side; fixed values are account-currency amounts and `perc` values are ratios of local contract notional."
                 },
                 "maintenanceMarginPerContract": {
                     "type": "object",
@@ -152,7 +127,7 @@
                         }
                     },
                     "additionalProperties": false,
-                    "description": "Maintenance margin requirement per contract side; fixed values are account-currency amounts and `perc` values are ratios of local contract price."
+                    "description": "Maintenance margin requirement per contract side; fixed values are account-currency amounts and `perc` values are ratios of local contract notional."
                 },
                 "exchangeCommission": {
                     "$ref": "#/definitions/ICompositeGroup",
