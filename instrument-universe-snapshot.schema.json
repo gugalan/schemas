@@ -1,0 +1,66 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$ref": "#/definitions/IResolvedInstrumentUniverseSnapshot",
+    "definitions": {
+        "IResolvedInstrumentUniverseSnapshot": {
+            "type": "object",
+            "properties": {
+                "effectiveAt": {
+                    "type": "string"
+                },
+                "pools": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IResolvedInstrumentPool"
+                    }
+                },
+                "symbols": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "effectiveAt",
+                "pools",
+                "symbols"
+            ],
+            "additionalProperties": false,
+            "description": "Materialized universe snapshot"
+        },
+        "IResolvedInstrumentPool": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string",
+                    "enum": [
+                        "manual",
+                        "dynamic",
+                        "event-driven"
+                    ]
+                },
+                "effectiveAt": {
+                    "type": "string"
+                },
+                "symbols": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "id",
+                "kind",
+                "effectiveAt",
+                "symbols"
+            ],
+            "additionalProperties": false,
+            "description": "Materialized pool snapshot"
+        }
+    }
+}

@@ -1,0 +1,241 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$ref": "#/definitions/ITradingCalendarSnapshot",
+    "definitions": {
+        "ITradingCalendarSnapshot": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string",
+                    "const": "current-trading-calendar-v1"
+                },
+                "periodStart": {
+                    "type": "number"
+                },
+                "periodEnd": {
+                    "type": "number"
+                },
+                "marketHolidays": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IMarketHoliday"
+                    }
+                },
+                "macroEvents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IMacroCalendarEvent"
+                    }
+                },
+                "earningsEvents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IEarningsCalendarEvent"
+                    }
+                }
+            },
+            "required": [
+                "id",
+                "version",
+                "periodStart",
+                "periodEnd",
+                "marketHolidays",
+                "macroEvents",
+                "earningsEvents"
+            ],
+            "additionalProperties": false
+        },
+        "IMarketHoliday": {
+            "type": "object",
+            "properties": {
+                "exchangeId": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "regularOpenTs": {
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "regularCloseTs": {
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "closed",
+                        "early-close"
+                    ]
+                }
+            },
+            "required": [
+                "exchangeId",
+                "date",
+                "name",
+                "regularOpenTs",
+                "regularCloseTs",
+                "status"
+            ],
+            "additionalProperties": false
+        },
+        "IMacroCalendarEvent": {
+            "type": "object",
+            "properties": {
+                "eventId": {
+                    "type": "string"
+                },
+                "eventType": {
+                    "type": "string",
+                    "enum": [
+                        "fomc",
+                        "cpi",
+                        "nfp"
+                    ]
+                },
+                "market": {
+                    "$ref": "#/definitions/MarketRegion"
+                },
+                "date": {
+                    "type": "number"
+                },
+                "startDate": {
+                    "type": "number"
+                },
+                "endDate": {
+                    "type": "number"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "sourceId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "eventId",
+                "eventType",
+                "market",
+                "date",
+                "startDate",
+                "endDate",
+                "title",
+                "provider",
+                "sourceId"
+            ],
+            "additionalProperties": false
+        },
+        "MarketRegion": {
+            "type": "string",
+            "enum": [
+                "jp",
+                "gb",
+                "us",
+                "au"
+            ]
+        },
+        "IEarningsCalendarEvent": {
+            "type": "object",
+            "properties": {
+                "eventId": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "market": {
+                    "$ref": "#/definitions/MarketRegion"
+                },
+                "reportDate": {
+                    "type": "number"
+                },
+                "fiscalDate": {
+                    "type": "number"
+                },
+                "reportTime": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/EarningsReportTime"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "currency": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "estimatedEps": {
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "reportedEps": {
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "scheduleProvider": {
+                    "type": "string"
+                },
+                "scheduleSourceId": {
+                    "type": "string"
+                },
+                "resultProvider": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "resultSourceId": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "eventId",
+                "symbol",
+                "market",
+                "reportDate",
+                "fiscalDate",
+                "reportTime",
+                "currency",
+                "estimatedEps",
+                "reportedEps",
+                "scheduleProvider",
+                "scheduleSourceId",
+                "resultProvider",
+                "resultSourceId"
+            ],
+            "additionalProperties": false
+        },
+        "EarningsReportTime": {
+            "type": "string",
+            "enum": [
+                "beforeMarketOpen",
+                "afterMarketClose"
+            ]
+        }
+    }
+}
