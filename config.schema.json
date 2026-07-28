@@ -437,6 +437,10 @@
                     "$ref": "#/definitions/ICompositeDynamicValue",
                     "description": "Simulated slippage per trade"
                 },
+                "executionBarVolumeParticipation": {
+                    "type": "number",
+                    "description": "Maximum share of one raw execution bar's volume available to simulated fills"
+                },
                 "optimization": {
                     "$ref": "#/definitions/IConfigBacktestOptimization",
                     "description": "Optional optimization mode. This preserves trading behavior but reduces audit and curve persistence to improve throughput."
@@ -457,6 +461,7 @@
             "required": [
                 "usePerformanceScores",
                 "savePerformanceScores",
+                "executionBarVolumeParticipation",
                 "initialCapital"
             ],
             "additionalProperties": false,
