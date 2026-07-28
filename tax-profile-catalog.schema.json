@@ -74,6 +74,18 @@
                     "type": "number",
                     "description": "Tax rate applied to positive net realized PnL"
                 },
+                "dividendTaxRate": {
+                    "type": "number",
+                    "description": "Tax rate applied to positive gross dividend income"
+                },
+                "shortDividendTaxTreatment": {
+                    "type": "string",
+                    "enum": [
+                        "deductible",
+                        "non_deductible"
+                    ],
+                    "description": "Explicit tax policy for short-position dividend cash debits"
+                },
                 "lossCarryForwardYears": {
                     "type": "number",
                     "description": "Number of tax years where losses may be carried forward"
@@ -82,7 +94,9 @@
             "required": [
                 "validFrom",
                 "taxYear",
-                "realizedProfitTaxRate"
+                "realizedProfitTaxRate",
+                "dividendTaxRate",
+                "shortDividendTaxTreatment"
             ],
             "additionalProperties": false
         },

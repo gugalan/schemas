@@ -476,7 +476,7 @@
                 },
                 "executionBarVolumeParticipation": {
                     "type": "number",
-                    "description": "Maximum share of one raw execution bar's volume available to simulated fills"
+                    "description": "Maximum share of the complete current raw execution bar volume exposed from its opening phase by the intentional ex-post fill model"
                 },
                 "optimization": {
                     "$ref": "#/definitions/IConfigBacktestOptimization",
