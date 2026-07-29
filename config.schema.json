@@ -411,13 +411,9 @@
         "IConfigBacktest": {
             "type": "object",
             "properties": {
-                "usePerformanceScores": {
+                "useStrategyScores": {
                     "type": "boolean",
-                    "description": "Whether the backtest freezes and consumes causal performance scores before it starts"
-                },
-                "savePerformanceScores": {
-                    "type": "boolean",
-                    "description": "Whether a completed raw backtest publishes performance scores"
+                    "description": "Whether the backtest freezes and consumes causal strategy scores before it starts"
                 },
                 "startDate": {
                     "type": "string",
@@ -459,8 +455,7 @@
                 }
             },
             "required": [
-                "usePerformanceScores",
-                "savePerformanceScores",
+                "useStrategyScores",
                 "executionBarVolumeParticipation",
                 "initialCapital"
             ],
@@ -517,9 +512,9 @@
         "IConfigLiveTrading": {
             "type": "object",
             "properties": {
-                "usePerformanceScores": {
+                "useStrategyScores": {
                     "type": "boolean",
-                    "description": "Whether the live trader freezes and consumes causal performance scores when it starts or restarts"
+                    "description": "Whether the live trader freezes and consumes causal strategy scores when it starts or restarts"
                 },
                 "warmUpBarsCount": {
                     "type": "number",
@@ -527,7 +522,7 @@
                 }
             },
             "required": [
-                "usePerformanceScores",
+                "useStrategyScores",
                 "warmUpBarsCount"
             ],
             "additionalProperties": false,
