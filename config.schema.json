@@ -439,7 +439,7 @@
                 },
                 "optimization": {
                     "$ref": "#/definitions/IConfigBacktestOptimization",
-                    "description": "Optional optimization mode. This preserves trading behavior but reduces audit and curve persistence to improve throughput."
+                    "description": "Optional optimization mode. These flags preserve strategy-account behavior while omitting selected diagnostics, curves, or independent benchmark accounting to improve throughput."
                 },
                 "profiling": {
                     "type": "boolean",
@@ -485,6 +485,10 @@
         "IConfigBacktestOptimization": {
             "type": "object",
             "properties": {
+                "omitBenchmarks": {
+                    "type": "boolean",
+                    "description": "Omit account benchmark lanes and their persisted artifacts during the run"
+                },
                 "omitSignals": {
                     "type": "boolean",
                     "description": "Omit signals table rows during the run"
