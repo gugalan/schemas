@@ -556,15 +556,10 @@
                 "useStrategyScores": {
                     "type": "boolean",
                     "description": "Whether the live trader freezes and consumes causal strategy scores when it starts or restarts"
-                },
-                "warmUpBarsCount": {
-                    "type": "number",
-                    "description": "Number of bars to warm up the context before starting live trading"
                 }
             },
             "required": [
-                "useStrategyScores",
-                "warmUpBarsCount"
+                "useStrategyScores"
             ],
             "additionalProperties": false,
             "description": "Live trading configuration"
