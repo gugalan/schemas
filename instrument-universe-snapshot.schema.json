@@ -46,6 +46,27 @@
                 "effectiveAt": {
                     "type": "string"
                 },
+                "definitionHash": {
+                    "type": "string"
+                },
+                "materializedAt": {
+                    "type": "string"
+                },
+                "profileBasis": {
+                    "$ref": "#/definitions/InstrumentPoolProfileBasis"
+                },
+                "profileCapturedAt": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "profileSnapshotId": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
                 "symbols": {
                     "type": "array",
                     "items": {
@@ -57,10 +78,22 @@
                 "id",
                 "kind",
                 "effectiveAt",
+                "definitionHash",
+                "materializedAt",
+                "profileBasis",
+                "profileCapturedAt",
+                "profileSnapshotId",
                 "symbols"
             ],
             "additionalProperties": false,
             "description": "Materialized pool snapshot"
+        },
+        "InstrumentPoolProfileBasis": {
+            "type": "string",
+            "enum": [
+                "not-required",
+                "current-profile-proxy-v1"
+            ]
         }
     }
 }
