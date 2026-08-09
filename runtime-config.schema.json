@@ -391,7 +391,7 @@
         "IConfigStrategyRiskOverride": {
             "type": "object",
             "properties": {
-                "id": {
+                "strategyProfileId": {
                     "$ref": "#/definitions/StrategyRiskProfileId"
                 },
                 "preferredRiskProfileId": {
@@ -442,7 +442,7 @@
                 }
             },
             "required": [
-                "id"
+                "strategyProfileId"
             ],
             "additionalProperties": false
         },

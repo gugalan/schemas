@@ -351,7 +351,7 @@
         "IConfigStrategyRiskOverride": {
             "type": "object",
             "properties": {
-                "id": {
+                "strategyProfileId": {
                     "$ref": "#/definitions/StrategyRiskProfileId",
                     "description": "Canonical strategy-type id referenced by Strategy.RiskProfileId and used to find this optional override."
                 },
@@ -415,7 +415,7 @@
                 }
             },
             "required": [
-                "id"
+                "strategyProfileId"
             ],
             "additionalProperties": false,
             "description": "Optional risk overrides keyed by a canonical strategy-type profile."
