@@ -72,9 +72,20 @@
                     },
                     "description": "Strategy slugs that the account can use. If undefined, the account can use all configured strategy slugs. Slugs are composed as `<series>.<branch>`."
                 },
-                "riskProfileId": {
+                "defaultRiskProfileId": {
                     "type": "string",
-                    "description": "Risk profile id to use"
+                    "description": "Generic risk profile used when a strategy preference is absent or disallowed."
+                },
+                "allowedRiskProfileIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Generic risk profiles that strategy preferences may select for this account."
+                },
+                "maxLossPerDay": {
+                    "$ref": "#/definitions/ICompositeValue",
+                    "description": "Optional account-specific override for the trader-wide hard daily loss limit."
                 },
                 "riskDay": {
                     "$ref": "#/definitions/IAccountRiskDayPolicy",
@@ -154,7 +165,8 @@
                 "id",
                 "type",
                 "active",
-                "riskProfileId",
+                "defaultRiskProfileId",
+                "allowedRiskProfileIds",
                 "riskDay",
                 "currency",
                 "brokerAccount"
@@ -172,6 +184,29 @@
             "type": "string",
             "const": "argo.base",
             "description": "Public production strategy slug type."
+        },
+        "ICompositeValue": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "number"
+                },
+                "type": {
+                    "$ref": "#/definitions/IValueKind",
+                    "description": "Default is \"fixed\""
+                }
+            },
+            "required": [
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "IValueKind": {
+            "type": "string",
+            "enum": [
+                "fixed",
+                "perc"
+            ]
         },
         "IAccountRiskDayPolicy": {
             "type": "object",
@@ -264,29 +299,6 @@
                 "values"
             ],
             "additionalProperties": false
-        },
-        "ICompositeValue": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "number"
-                },
-                "type": {
-                    "$ref": "#/definitions/IValueKind",
-                    "description": "Default is \"fixed\""
-                }
-            },
-            "required": [
-                "value"
-            ],
-            "additionalProperties": false
-        },
-        "IValueKind": {
-            "type": "string",
-            "enum": [
-                "fixed",
-                "perc"
-            ]
         },
         "IBrokerAccount": {
             "type": "object",
@@ -415,17 +427,17 @@
                 "key": {
                     "type": "string"
                 },
-                "riskProfileId": {
+                "strategyProfileId": {
                     "$ref": "#/definitions/StrategyRiskProfileId"
                 }
             },
             "required": [
                 "id",
                 "key",
-                "riskProfileId"
+                "strategyProfileId"
             ],
             "additionalProperties": false,
-            "description": "Immutable strategy identity and risk binding used by one run."
+            "description": "Immutable strategy identity and taxonomy profile used by one run."
         },
         "StrategyRiskProfileId": {
             "type": "string",
@@ -582,19 +594,23 @@
                     "$ref": "#/definitions/IConfigInstrumentUniverse",
                     "description": "Instrument universe requested by the trader config"
                 },
-                "accountRiskProfiles": {
+                "riskProfiles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/IConfigAccountRiskProfile"
+                        "$ref": "#/definitions/IConfigRiskProfile"
                     },
-                    "description": "Reusable risk profiles available to accounts"
+                    "description": "Complete reusable entry-risk profiles selectable by accounts."
                 },
-                "strategyRiskProfiles": {
+                "strategyProfiles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/IConfigStrategyRiskProfile"
+                        "$ref": "#/definitions/IConfigStrategyProfile"
                     },
-                    "description": "Unified strategy risk profiles keyed by id"
+                    "description": "Optional preferences mapping canonical strategy profiles to generic risk profiles."
+                },
+                "defaultMaxLossPerDay": {
+                    "$ref": "#/definitions/ICompositeValue",
+                    "description": "Default hard account loss limit used when an account does not override it."
                 },
                 "maxContextBars": {
                     "type": "number",
@@ -638,15 +654,16 @@
                 }
             },
             "required": [
-                "accountRiskProfiles",
                 "approachingSignals",
                 "backtest",
+                "defaultMaxLossPerDay",
                 "instrumentUniverse",
                 "live",
                 "maxContextBars",
                 "notifications",
+                "riskProfiles",
                 "strategies",
-                "strategyRiskProfiles"
+                "strategyProfiles"
             ],
             "additionalProperties": false,
             "description": "Trader configuration after a runtime entry point selects registered strategy identifiers."
@@ -679,32 +696,32 @@
             "additionalProperties": false,
             "description": "Instrument universe configuration"
         },
-        "IConfigAccountRiskProfile": {
+        "IConfigRiskProfile": {
             "type": "object",
             "properties": {
                 "id": {
                     "type": "string",
-                    "description": "Unique id for this account risk profile"
+                    "description": "Canonical reusable profile id."
                 },
                 "maxRiskPercPerTrade": {
                     "type": "number",
-                    "description": "Default max risk ratio per trade, where 1 is 100%; confidence and HV modifiers can only reduce the resulting budget.",
+                    "description": "Max risk ratio per trade, where 1 is 100%; confidence and HV modifiers can only reduce the resulting budget.",
                     "minimum": 0,
                     "maximum": 1
                 },
                 "maxDrawdownPercPerDay": {
                     "type": "number",
-                    "description": "Default soft daily drawdown ratio, where 1 is 100%. A strategy-type override may replace it.",
+                    "description": "Soft daily drawdown ratio, where 1 is 100%.",
                     "minimum": 0,
                     "maximum": 1
                 },
                 "hv": {
                     "$ref": "#/definitions/IConfigHVRule",
-                    "description": "Optional default historical-volatility sizing rule inherited by every strategy type."
+                    "description": "Optional historical-volatility sizing rule."
                 },
                 "backtest": {
                     "$ref": "#/definitions/IConfigRiskBacktestProfile",
-                    "description": "Default backtest execution-friction factors inherited by every strategy type."
+                    "description": "Backtest execution-friction factors."
                 },
                 "minCapitalPerTrade": {
                     "$ref": "#/definitions/ICompositeValue",
@@ -713,10 +730,6 @@
                 "maxCapitalPerTrade": {
                     "$ref": "#/definitions/ICompositeValue",
                     "description": "Max capital to allocate per trade after risk sizing. Percentage values resolve against available capital at signal time before conversion to shares/contracts."
-                },
-                "maxLossPerDay": {
-                    "$ref": "#/definitions/ICompositeValue",
-                    "description": "Hard account loss limit for one risk day. Historical execution cancels pending orders and submits reduce-only liquidation orders when tax-neutral performance drawdown reaches the limit. Gaps, costs, and causal volume can cause overshoot."
                 },
                 "maxSpreadPerTrade": {
                     "$ref": "#/definitions/ICompositeValue",
@@ -749,7 +762,7 @@
                 "maxDrawdownPercPerDay"
             ],
             "additionalProperties": false,
-            "description": "Account risk profile configuration"
+            "description": "Complete reusable entry-risk profile configuration."
         },
         "IConfigHVRule": {
             "type": "object",
@@ -808,109 +821,25 @@
                 }
             },
             "additionalProperties": false,
-            "description": "Backtest-only execution-friction factors shared by account defaults and strategy overrides."
+            "description": "Backtest-only execution-friction factors owned by a generic risk profile."
         },
-        "IConfigStrategyRiskProfile": {
+        "IConfigStrategyProfile": {
             "type": "object",
             "properties": {
                 "id": {
                     "$ref": "#/definitions/StrategyRiskProfileId",
-                    "description": "Unique id for this strategy risk profile"
+                    "description": "Canonical strategy profile id."
                 },
-                "maxRiskPercPerTrade": {
-                    "type": "number",
-                    "description": "Optional max risk ratio override per trade, where 1 is 100%.",
-                    "minimum": 0,
-                    "maximum": 1
-                },
-                "maxDrawdownPercPerDay": {
-                    "type": "number",
-                    "description": "Soft daily drawdown ratio, where 1 is 100%. New entries from this strategy are blocked when the account's tax-neutral performance drawdown reaches it; existing positions are not liquidated by this limit.",
-                    "minimum": 0,
-                    "maximum": 1
-                },
-                "hv": {
-                    "$ref": "#/definitions/IConfigHVRuleOverride",
-                    "description": "Optional historical-volatility fields replacing the corresponding account defaults."
-                },
-                "backtest": {
-                    "$ref": "#/definitions/IConfigRiskBacktestProfile",
-                    "description": "Optional backtest execution-friction fields replacing the corresponding account defaults."
-                },
-                "minCapitalPerTrade": {
-                    "$ref": "#/definitions/ICompositeValue",
-                    "description": "Optional minimum capital override for this strategy type."
-                },
-                "maxCapitalPerTrade": {
-                    "$ref": "#/definitions/ICompositeValue",
-                    "description": "Optional maximum capital override for this strategy type."
-                },
-                "maxSpreadPerTrade": {
-                    "$ref": "#/definitions/ICompositeValue",
-                    "description": "Optional maximum spread override for this strategy type."
-                },
-                "maxDailyVolumeParticipationPerTrade": {
-                    "type": "number",
-                    "description": "Optional daily-volume participation override for this strategy type."
-                },
-                "minRecentExecutionBars": {
-                    "type": "number",
-                    "description": "Optional completed execution-bar requirement override for this strategy type."
-                },
-                "maxExecutionBarGapFactor": {
-                    "type": "number",
-                    "description": "Optional completed execution-bar continuity override for this strategy type."
-                },
-                "minSignalScore": {
-                    "type": "number",
-                    "description": "Optional minimum signal-score override for this strategy type."
+                "preferredRiskProfileId": {
+                    "type": "string",
+                    "description": "Generic risk profile requested when the account allowlist permits it."
                 }
             },
             "required": [
                 "id"
             ],
             "additionalProperties": false,
-            "description": "Strategy risk profile configuration"
-        },
-        "IConfigHVRuleOverride": {
-            "type": "object",
-            "properties": {
-                "bands": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "threshold": {
-                                "type": [
-                                    "number",
-                                    "null"
-                                ],
-                                "description": "Upper bound for this band; if null, this is the catch-all band."
-                            },
-                            "riskMultiplier": {
-                                "type": "number",
-                                "description": "Risk multiplier applied when value falls into this band"
-                            }
-                        },
-                        "required": [
-                            "threshold",
-                            "riskMultiplier"
-                        ],
-                        "additionalProperties": false
-                    },
-                    "description": "Optional replacement for the account-level volatility bands."
-                },
-                "lookbackDays": {
-                    "type": "number",
-                    "description": "Optional replacement for the account-level daily lookback."
-                },
-                "shock": {
-                    "type": "number",
-                    "description": "Optional replacement for the account-level shock multiple."
-                }
-            },
-            "additionalProperties": false,
-            "description": "Partial historical volatility override applied by one strategy type."
+            "description": "Optional risk preference attached to one canonical strategy profile."
         },
         "IConfigApproachSignals": {
             "type": "object",

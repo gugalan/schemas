@@ -31,9 +31,20 @@
                     },
                     "description": "Strategy slugs that the account can use. If undefined, the account can use all configured strategy slugs. Slugs are composed as `<series>.<branch>`."
                 },
-                "riskProfileId": {
+                "defaultRiskProfileId": {
                     "type": "string",
-                    "description": "Risk profile id to use"
+                    "description": "Generic risk profile used when a strategy preference is absent or disallowed."
+                },
+                "allowedRiskProfileIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Generic risk profiles that strategy preferences may select for this account."
+                },
+                "maxLossPerDay": {
+                    "$ref": "#/definitions/ICompositeValue",
+                    "description": "Optional account-specific override for the trader-wide hard daily loss limit."
                 },
                 "riskDay": {
                     "$ref": "#/definitions/IAccountRiskDayPolicy",
@@ -114,11 +125,12 @@
             },
             "required": [
                 "active",
+                "allowedRiskProfileIds",
                 "brokerAccount",
                 "currency",
+                "defaultRiskProfileId",
                 "id",
                 "riskDay",
-                "riskProfileId",
                 "type"
             ],
             "additionalProperties": false,
@@ -135,6 +147,29 @@
             "type": "string",
             "const": "argo.base",
             "description": "Public production strategy slug type."
+        },
+        "ICompositeValue": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "number"
+                },
+                "type": {
+                    "$ref": "#/definitions/IValueKind",
+                    "description": "Default is \"fixed\""
+                }
+            },
+            "required": [
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "IValueKind": {
+            "type": "string",
+            "enum": [
+                "fixed",
+                "perc"
+            ]
         },
         "IAccountRiskDayPolicy": {
             "type": "object",
@@ -191,29 +226,6 @@
                 "values"
             ],
             "additionalProperties": false
-        },
-        "ICompositeValue": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "number"
-                },
-                "type": {
-                    "$ref": "#/definitions/IValueKind",
-                    "description": "Default is \"fixed\""
-                }
-            },
-            "required": [
-                "value"
-            ],
-            "additionalProperties": false
-        },
-        "IValueKind": {
-            "type": "string",
-            "enum": [
-                "fixed",
-                "perc"
-            ]
         },
         "IBrokerAccount": {
             "type": "object",
