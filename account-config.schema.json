@@ -33,18 +33,11 @@
                 },
                 "defaultRiskProfileId": {
                     "type": "string",
-                    "description": "Generic risk profile used when a strategy preference is absent or disallowed."
-                },
-                "allowedRiskProfileIds": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Generic risk profiles that strategy preferences may select for this account."
+                    "description": "Generic risk profile selected when the strategy type has no configured preferred profile."
                 },
                 "maxLossPerDay": {
                     "$ref": "#/definitions/ICompositeValue",
-                    "description": "Optional account-specific override for the trader-wide hard daily loss limit."
+                    "description": "Optional account-specific replacement for trader.defaultMaxLossPerDay. Fixed values use account currency; percentage values use the highest tax-neutral performance equity in the current risk day. Historical execution cancels pending intent and creates reduce-only liquidation orders after breach, while live execution currently blocks later entries. A strategy risk override cannot change this account-wide limit."
                 },
                 "riskDay": {
                     "$ref": "#/definitions/IAccountRiskDayPolicy",
@@ -125,7 +118,6 @@
             },
             "required": [
                 "active",
-                "allowedRiskProfileIds",
                 "brokerAccount",
                 "currency",
                 "defaultRiskProfileId",
@@ -152,11 +144,13 @@
             "type": "object",
             "properties": {
                 "value": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Non-negative magnitude. With type \"perc\", this is a ratio from 0 to 1 resolved against the basis documented by the owning parameter; otherwise it uses that parameter's fixed unit.",
+                    "minimum": 0
                 },
                 "type": {
                     "$ref": "#/definitions/IValueKind",
-                    "description": "Default is \"fixed\""
+                    "description": "Value interpretation: \"fixed\" uses the owning parameter's unit and \"perc\" uses its documented basis. Defaults to \"fixed\"."
                 }
             },
             "required": [
@@ -176,11 +170,11 @@
             "properties": {
                 "boundary": {
                     "type": "number",
-                    "description": "Local boundary encoded as HHMM, where 0 is midnight and 1730 is 17:30"
+                    "description": "Local reset boundary for soft and hard daily risk state, encoded as HHMM where 0 is midnight and 1730 is 17:30."
                 },
                 "timeZone": {
                     "type": "string",
-                    "description": "IANA timezone used to interpret the boundary"
+                    "description": "IANA timezone used to interpret the risk-day reset boundary independently from instrument sessions and civil tax dates."
                 }
             },
             "required": [

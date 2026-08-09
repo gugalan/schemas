@@ -91,18 +91,18 @@
                     "items": {
                         "$ref": "#/definitions/IConfigRiskProfile"
                     },
-                    "description": "Complete reusable entry-risk profiles selectable by accounts."
+                    "description": "Complete reusable entry-risk profiles selectable by accounts. The selected profile supplies the base values before optional strategyRiskOverrides entries."
                 },
-                "strategyProfiles": {
+                "strategyRiskOverrides": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/IConfigStrategyProfile"
+                        "$ref": "#/definitions/IConfigStrategyRiskOverride"
                     },
-                    "description": "Optional preferences mapping canonical strategy profiles to generic risk profiles."
+                    "description": "Optional risk overrides keyed by canonical strategy type. Each entry may prefer a generic risk profile and replace individual fields after generic profile selection."
                 },
                 "defaultMaxLossPerDay": {
                     "$ref": "#/definitions/ICompositeValue",
-                    "description": "Default hard account loss limit used when an account does not override it."
+                    "description": "Default hard account loss limit used when an account does not override it. Fixed values use account currency; percentage values use the highest tax-neutral performance equity in the current risk day. Historical execution cancels pending intent and creates reduce-only liquidation orders after breach; live execution currently blocks later entries. This limit is outside selectable and strategy profiles."
                 },
                 "maxContextBars": {
                     "type": "number",
@@ -142,7 +142,7 @@
                 "strategies",
                 "instrumentUniverse",
                 "riskProfiles",
-                "strategyProfiles",
+                "strategyRiskOverrides",
                 "defaultMaxLossPerDay",
                 "maxContextBars",
                 "approachingSignals",
@@ -191,57 +191,59 @@
             "properties": {
                 "id": {
                     "type": "string",
-                    "description": "Canonical reusable profile id."
+                    "description": "Canonical generic profile id referenced by account default and allowed profile identifiers."
                 },
                 "maxRiskPercPerTrade": {
                     "type": "number",
-                    "description": "Max risk ratio per trade, where 1 is 100%; confidence and HV modifiers can only reduce the resulting budget.",
+                    "description": "Maximum loss budget per trade as a ratio of available capital, where 1 is 100%. Signal confidence and HV modifiers can only reduce this budget. The resulting position is separately capped by maxCapitalPerTrade.",
                     "minimum": 0,
                     "maximum": 1
                 },
                 "maxDrawdownPercPerDay": {
                     "type": "number",
-                    "description": "Soft daily drawdown ratio, where 1 is 100%.",
+                    "description": "Soft risk-day drawdown ratio, where 1 is 100%. It is measured from the tax-neutral performance-equity peak since the account risk-day boundary and blocks new entries without liquidating positions.",
                     "minimum": 0,
                     "maximum": 1
                 },
                 "hv": {
                     "$ref": "#/definitions/IConfigHVRule",
-                    "description": "Optional historical-volatility sizing rule."
+                    "description": "Optional historical-volatility sizing rule. Its lookback extends strategy warmup, its bands scale the loss budget, and its shock estimates per-unit risk when the signal has no explicit stop distance."
                 },
                 "backtest": {
                     "$ref": "#/definitions/IConfigRiskBacktestProfile",
-                    "description": "Backtest execution-friction factors."
+                    "description": "Backtest execution-friction factors applied by the simulated broker and portfolio reservations."
                 },
                 "minCapitalPerTrade": {
                     "$ref": "#/definitions/ICompositeValue",
-                    "description": "Minimum capital required to open a trade. Orders whose final allocated capital is below this threshold are discarded. Example: 1_000 means skip trades that would allocate less than $1k."
+                    "description": "Minimum final capital allocation required to open a trade. Fixed values use account currency; percentage values use available capital at signal time. Orders below the resolved threshold are discarded. Example: 1_000 means skip trades that would allocate less than $1k."
                 },
                 "maxCapitalPerTrade": {
                     "$ref": "#/definitions/ICompositeValue",
-                    "description": "Max capital to allocate per trade after risk sizing. Percentage values resolve against available capital at signal time before conversion to shares/contracts."
+                    "description": "Maximum capital allocated per trade after loss-budget sizing. Fixed values use account currency; percentage values resolve against available capital at signal time before conversion to shares/contracts."
                 },
                 "maxSpreadPerTrade": {
                     "$ref": "#/definitions/ICompositeValue",
-                    "description": "Max spread allowed to open; wider spreads skip the trade"
+                    "description": "Maximum spread accepted at the executable order price. Fixed values use price units and percentage values use the executable price; wider spreads discard the entry before order creation."
                 },
                 "maxDailyVolumeParticipationPerTrade": {
                     "type": "number",
-                    "description": "Max ratio of recent daily volume that a new order may request, where 1 is 100%.",
+                    "description": "Maximum share of the previous completed daily bar volume that a new order may request, where 1 is 100%. Missing usable daily volume discards the entry instead of assuming liquidity.",
                     "minimum": 0,
                     "maximum": 1
                 },
                 "minRecentExecutionBars": {
                     "type": "number",
-                    "description": "Number of recent completed one-minute execution bars that must exist and be continuous before opening."
+                    "description": "Minimum number of recent completed one-minute execution bars with positive volume required before entry.",
+                    "minimum": 0
                 },
                 "maxExecutionBarGapFactor": {
                     "type": "number",
-                    "description": "Maximum allowed gap between consecutive completed one-minute execution bars, expressed as a multiple of one minute."
+                    "description": "Maximum allowed gap between consecutive recent completed one-minute execution bars, expressed as a multiple of one minute.",
+                    "exclusiveMinimum": 0
                 },
                 "minSignalScore": {
                     "type": "number",
-                    "description": "Minimum signal score required to place trades.",
+                    "description": "Minimum confidence × causal strategy rank required before an entry may be sized.",
                     "minimum": 0,
                     "maximum": 1
                 }
@@ -267,11 +269,14 @@
                                     "number",
                                     "null"
                                 ],
-                                "description": "Upper bound for this band; if null, this is the catch-all band."
+                                "description": "Inclusive daily-HV upper bound for this band; null is the required final catch-all.",
+                                "minimum": 0
                             },
                             "riskMultiplier": {
                                 "type": "number",
-                                "description": "Risk multiplier applied when value falls into this band"
+                                "description": "Multiplier applied to the per-trade loss budget when observed daily HV falls in this band. It may reduce the base budget but cannot increase it above the configured maximum.",
+                                "minimum": 0,
+                                "maximum": 1
                             }
                         },
                         "required": [
@@ -279,15 +284,18 @@
                             "riskMultiplier"
                         ],
                         "additionalProperties": false
-                    }
+                    },
+                    "description": "Ordered historical-volatility bands. The first threshold greater than or equal to the observed daily HV supplies its multiplier, and exactly one final null threshold is the required catch-all."
                 },
                 "lookbackDays": {
                     "type": "number",
-                    "description": "Daily bars used to compute hvDaily for this profile. This sets the lookback window for volatility, not the sizing formula itself. Example: 10 for scalping, 20 for intraday, 30 for swing, 60 for position."
+                    "description": "Daily bars used to compute hvDaily for this profile. This sets the lookback window for volatility, not the sizing formula itself. Example: 10 for scalping, 20 for intraday, 30 for swing, 60 for position.",
+                    "minimum": 1
                 },
                 "shock": {
                     "type": "number",
-                    "description": "Multiple of daily HV used to estimate a \"shock\" per unit when no explicit stop distance is provided by the strategy. perUnitRisk = hvDaily * hvShockMultiple * price. Example: 1.5 ≈ 1.5 sigma shock."
+                    "description": "Multiple of daily HV used to estimate a \"shock\" per unit when no explicit stop distance is provided by the strategy. perUnitRisk = hvDaily * hvShockMultiple * price. Example: 1.5 ≈ 1.5 sigma shock.",
+                    "exclusiveMinimum": 0
                 }
             },
             "required": [
@@ -303,11 +311,13 @@
             "properties": {
                 "spreadFactor": {
                     "type": "number",
-                    "description": "Spread factor applied during backtesting."
+                    "description": "Multiplier applied to the configured dynamic spread model during backtests. When omitted, spread may inherit slippageFactor; zero explicitly disables profile-level spread friction.",
+                    "minimum": 0
                 },
                 "slippageFactor": {
                     "type": "number",
-                    "description": "Slippage factor applied during backtesting."
+                    "description": "Multiplier applied to the configured dynamic slippage model during sizing, reservation, and simulated fills. Zero explicitly disables profile-level slippage friction.",
+                    "minimum": 0
                 }
             },
             "additionalProperties": false,
@@ -317,11 +327,13 @@
             "type": "object",
             "properties": {
                 "value": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Non-negative magnitude. With type \"perc\", this is a ratio from 0 to 1 resolved against the basis documented by the owning parameter; otherwise it uses that parameter's fixed unit.",
+                    "minimum": 0
                 },
                 "type": {
                     "$ref": "#/definitions/IValueKind",
-                    "description": "Default is \"fixed\""
+                    "description": "Value interpretation: \"fixed\" uses the owning parameter's unit and \"perc\" uses its documented basis. Defaults to \"fixed\"."
                 }
             },
             "required": [
@@ -336,23 +348,77 @@
                 "perc"
             ]
         },
-        "IConfigStrategyProfile": {
+        "IConfigStrategyRiskOverride": {
             "type": "object",
             "properties": {
                 "id": {
                     "$ref": "#/definitions/StrategyRiskProfileId",
-                    "description": "Canonical strategy profile id."
+                    "description": "Canonical strategy-type id referenced by Strategy.RiskProfileId and used to find this optional override."
                 },
                 "preferredRiskProfileId": {
                     "type": "string",
-                    "description": "Generic risk profile requested when the account allowlist permits it."
+                    "description": "Generic risk profile requested before this strategy risk override is applied. A present preference is selected instead of the account default before field-level overrides are applied."
+                },
+                "maxRiskPercPerTrade": {
+                    "type": "number",
+                    "description": "Optional replacement for the selected profile's maximum loss budget per trade, where 1 is 100% of available capital before signal-confidence and HV reductions.",
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "maxDrawdownPercPerDay": {
+                    "type": "number",
+                    "description": "Optional replacement for the selected profile's soft risk-day drawdown ratio. The effective value blocks new entries after breach and does not liquidate positions.",
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "hv": {
+                    "$ref": "#/definitions/IConfigHVRuleOverride",
+                    "description": "Optional field-level historical-volatility sizing overrides."
+                },
+                "backtest": {
+                    "$ref": "#/definitions/IConfigRiskBacktestProfile",
+                    "description": "Optional field-level backtest execution-friction overrides."
+                },
+                "minCapitalPerTrade": {
+                    "$ref": "#/definitions/ICompositeValue",
+                    "description": "Optional replacement for the minimum final allocation required to keep an entry order."
+                },
+                "maxCapitalPerTrade": {
+                    "$ref": "#/definitions/ICompositeValue",
+                    "description": "Optional replacement for the maximum allocation per entry after risk sizing. Percentage values use available capital."
+                },
+                "maxSpreadPerTrade": {
+                    "$ref": "#/definitions/ICompositeValue",
+                    "description": "Optional replacement for the maximum spread accepted at the executable order price."
+                },
+                "maxDailyVolumeParticipationPerTrade": {
+                    "type": "number",
+                    "description": "Optional replacement for the maximum share of the previous completed daily bar volume requested by one entry.",
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "minRecentExecutionBars": {
+                    "type": "number",
+                    "description": "Optional replacement for the minimum number of recent completed one-minute bars with positive volume required before entry.",
+                    "minimum": 0
+                },
+                "maxExecutionBarGapFactor": {
+                    "type": "number",
+                    "description": "Optional replacement for the maximum gap between recent completed one-minute bars, as a multiple of one minute.",
+                    "exclusiveMinimum": 0
+                },
+                "minSignalScore": {
+                    "type": "number",
+                    "description": "Optional replacement for the minimum confidence × causal strategy rank accepted before sizing.",
+                    "minimum": 0,
+                    "maximum": 1
                 }
             },
             "required": [
                 "id"
             ],
             "additionalProperties": false,
-            "description": "Optional risk preference attached to one canonical strategy profile."
+            "description": "Optional risk overrides keyed by a canonical strategy-type profile."
         },
         "StrategyRiskProfileId": {
             "type": "string",
@@ -385,6 +451,51 @@
                 "position.liquidity",
                 "position.volatility"
             ]
+        },
+        "IConfigHVRuleOverride": {
+            "type": "object",
+            "properties": {
+                "bands": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "threshold": {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ],
+                                "description": "Inclusive daily-HV upper bound for this band; null is the required final catch-all.",
+                                "minimum": 0
+                            },
+                            "riskMultiplier": {
+                                "type": "number",
+                                "description": "Multiplier applied to the per-trade loss budget when observed daily HV falls in this band. It may reduce the base budget but cannot increase it above the configured maximum.",
+                                "minimum": 0,
+                                "maximum": 1
+                            }
+                        },
+                        "required": [
+                            "threshold",
+                            "riskMultiplier"
+                        ],
+                        "additionalProperties": false
+                    },
+                    "description": "Replacement ordered volatility bands; omission inherits the selected generic profile bands."
+                },
+                "lookbackDays": {
+                    "type": "number",
+                    "description": "Replacement daily-bar lookback; omission inherits the selected generic profile lookback.",
+                    "minimum": 1
+                },
+                "shock": {
+                    "type": "number",
+                    "description": "Replacement HV shock multiple; omission inherits the selected generic profile shock.",
+                    "exclusiveMinimum": 0
+                }
+            },
+            "additionalProperties": false,
+            "description": "Field-level historical-volatility values inside one strategy risk override."
         },
         "IConfigApproachSignals": {
             "type": "object",
