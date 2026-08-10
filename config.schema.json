@@ -801,7 +801,7 @@
                 },
                 "rawArchivePath": {
                     "type": "string",
-                    "description": "Destination for successfully consumed raw files. Omit to delete them after aggregation."
+                    "description": "Base destination for successfully consumed raw files under <type>/<dataset>. Omit to delete them after aggregation."
                 },
                 "universe": {
                     "$ref": "#/definitions/IConfigMassiveFlatFileUniverse",
