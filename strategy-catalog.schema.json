@@ -50,21 +50,11 @@
             "description": "One production-stage deployment entry for a concrete strategy version."
         },
         "StrategyCatalogStatus": {
-            "anyOf": [
-                {
-                    "$ref": "#/definitions/TradingAccountType"
-                },
-                {
-                    "type": "string",
-                    "const": "disabled"
-                }
-            ]
-        },
-        "TradingAccountType": {
             "type": "string",
             "enum": [
                 "paper",
-                "live"
+                "live",
+                "disabled"
             ]
         }
     }

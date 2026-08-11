@@ -131,6 +131,7 @@
         "TradingAccountType": {
             "type": "string",
             "enum": [
+                "backtest",
                 "paper",
                 "live"
             ]
