@@ -52,8 +52,7 @@
         "StrategyCatalogStatus": {
             "type": "string",
             "enum": [
-                "paper",
-                "live",
+                "published",
                 "disabled"
             ]
         }

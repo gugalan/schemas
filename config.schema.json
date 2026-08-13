@@ -155,7 +155,7 @@
         },
         "StrategySlug": {
             "type": "string",
-            "const": "argo.base",
+            "const": "argo.quality-wide-target",
             "description": "Public production strategy slug type."
         },
         "IConfigInstrumentUniverse": {
