@@ -561,7 +561,7 @@
                     "format": "date-time"
                 },
                 "spread": {
-                    "$ref": "#/definitions/ICompositeDynamicValue"
+                    "$ref": "#/definitions/IBacktestSpreadValue"
                 },
                 "slippage": {
                     "$ref": "#/definitions/ICompositeDynamicValue"
@@ -589,6 +589,16 @@
             ],
             "additionalProperties": false
         },
+        "IBacktestSpreadValue": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/ICompositeDynamicValue"
+                },
+                {
+                    "$ref": "#/definitions/IObservedSpreadValue"
+                }
+            ]
+        },
         "ICompositeDynamicValue": {
             "anyOf": [
                 {
@@ -608,6 +618,27 @@
                     "additionalProperties": false
                 }
             ]
+        },
+        "IObservedSpreadValue": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "const": "observed"
+                },
+                "minimumCoverage": {
+                    "type": "number"
+                },
+                "maximumAgeMs": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "type",
+                "minimumCoverage",
+                "maximumAgeMs"
+            ],
+            "additionalProperties": false
         },
         "IConfigBacktestOptimization": {
             "type": "object",

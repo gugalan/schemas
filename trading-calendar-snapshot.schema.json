@@ -10,7 +10,7 @@
                 },
                 "version": {
                     "type": "string",
-                    "const": "current-trading-calendar-v1"
+                    "const": "current-trading-calendar-v2"
                 },
                 "periodStart": {
                     "type": "number"
@@ -18,10 +18,13 @@
                 "periodEnd": {
                     "type": "number"
                 },
-                "marketHolidays": {
+                "marketSessionCoverage": {
+                    "$ref": "#/definitions/IMarketSessionCoverage"
+                },
+                "marketSessions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/IMarketHoliday"
+                        "$ref": "#/definitions/IMarketSession"
                     }
                 },
                 "macroEvents": {
@@ -42,51 +45,51 @@
                 "version",
                 "periodStart",
                 "periodEnd",
-                "marketHolidays",
+                "marketSessionCoverage",
+                "marketSessions",
                 "macroEvents",
                 "earningsEvents"
             ],
             "additionalProperties": false
         },
-        "IMarketHoliday": {
+        "IMarketSessionCoverage": {
             "type": "object",
             "properties": {
-                "exchangeId": {
-                    "type": "string"
-                },
-                "date": {
+                "periodEnd": {
                     "type": "number"
                 },
-                "name": {
-                    "type": "string"
+                "periodStart": {
+                    "type": "number"
                 },
-                "regularOpenTs": {
-                    "type": [
-                        "number",
-                        "null"
-                    ]
-                },
-                "regularCloseTs": {
-                    "type": [
-                        "number",
-                        "null"
-                    ]
-                },
-                "status": {
+                "provider": {
                     "type": "string",
-                    "enum": [
-                        "closed",
-                        "early-close"
-                    ]
+                    "const": "alpaca"
                 }
             },
             "required": [
-                "exchangeId",
+                "periodEnd",
+                "periodStart",
+                "provider"
+            ],
+            "additionalProperties": false
+        },
+        "IMarketSession": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "number"
+                },
+                "regularOpenTs": {
+                    "type": "number"
+                },
+                "regularCloseTs": {
+                    "type": "number"
+                }
+            },
+            "required": [
                 "date",
-                "name",
                 "regularOpenTs",
-                "regularCloseTs",
-                "status"
+                "regularCloseTs"
             ],
             "additionalProperties": false
         },

@@ -547,8 +547,8 @@
                     "description": "End date; if missing, run up to current date"
                 },
                 "spread": {
-                    "$ref": "#/definitions/ICompositeDynamicValue",
-                    "description": "Simulated spread to inject in fills"
+                    "$ref": "#/definitions/IBacktestSpreadValue",
+                    "description": "Simulated or observed spread policy used by historical execution"
                 },
                 "slippage": {
                     "$ref": "#/definitions/ICompositeDynamicValue",
@@ -583,6 +583,16 @@
             "additionalProperties": false,
             "description": "Backtest configuration"
         },
+        "IBacktestSpreadValue": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/ICompositeDynamicValue"
+                },
+                {
+                    "$ref": "#/definitions/IObservedSpreadValue"
+                }
+            ]
+        },
         "ICompositeDynamicValue": {
             "anyOf": [
                 {
@@ -602,6 +612,29 @@
                     "additionalProperties": false
                 }
             ]
+        },
+        "IObservedSpreadValue": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "const": "observed"
+                },
+                "minimumCoverage": {
+                    "type": "number",
+                    "description": "Minimum valid quoted-time ratio required from the latest completed bar."
+                },
+                "maximumAgeMs": {
+                    "type": "number",
+                    "description": "Maximum age of the closing NBBO update at the execution decision."
+                }
+            },
+            "required": [
+                "type",
+                "minimumCoverage",
+                "maximumAgeMs"
+            ],
+            "additionalProperties": false
         },
         "IConfigBacktestOptimization": {
             "type": "object",
