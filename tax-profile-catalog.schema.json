@@ -85,10 +85,6 @@
                         "non_deductible"
                     ],
                     "description": "Explicit tax policy for short-position dividend cash debits"
-                },
-                "lossCarryForwardYears": {
-                    "type": "number",
-                    "description": "Number of tax years where losses may be carried forward"
                 }
             },
             "required": [
