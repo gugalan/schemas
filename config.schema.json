@@ -639,6 +639,13 @@
         "IConfigBacktestOptimization": {
             "type": "object",
             "properties": {
+                "maxDrawings": {
+                    "type": "number",
+                    "description": "Maximum retained drawing lifetimes for each strategy and reference-symbol lane",
+                    "minimum": 0,
+                    "maximum": 5000,
+                    "multipleOf": 1
+                },
                 "omitBenchmarks": {
                     "type": "boolean",
                     "description": "Omit account benchmark lanes and their persisted artifacts during the run"

@@ -643,6 +643,12 @@
         "IConfigBacktestOptimization": {
             "type": "object",
             "properties": {
+                "maxDrawings": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 5000,
+                    "multipleOf": 1
+                },
                 "omitBenchmarks": {
                     "type": "boolean"
                 },
