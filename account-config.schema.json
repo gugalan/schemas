@@ -17,6 +17,10 @@
                     "type": "boolean",
                     "description": "Whether the account is active"
                 },
+                "notificationsEnabled": {
+                    "type": "boolean",
+                    "description": "Whether this account may deliver notifications through globally configured channels; absence means disabled"
+                },
                 "instrumentPoolIds": {
                     "type": "array",
                     "items": {
