@@ -21,6 +21,10 @@
                     "type": "boolean",
                     "description": "Whether this account may deliver notifications through globally configured channels; absence means disabled"
                 },
+                "soundsEnabled": {
+                    "type": "boolean",
+                    "description": "Whether the Live client may play position lifecycle sounds for this account; absence means disabled"
+                },
                 "instrumentPoolIds": {
                     "type": "array",
                     "items": {
@@ -247,6 +251,18 @@
                 },
                 "apiSecret": {
                     "type": "string"
+                },
+                "gatewayHost": {
+                    "type": "string",
+                    "description": "Loopback address used by the Interactive Brokers Gateway socket"
+                },
+                "gatewayPort": {
+                    "type": "number",
+                    "description": "Host port mapped to the Interactive Brokers Paper Gateway socket"
+                },
+                "clientId": {
+                    "type": "number",
+                    "description": "TWS API client identity reserved for this Gu account worker"
                 },
                 "allowShorting": {
                     "type": "boolean",
