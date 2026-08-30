@@ -47,6 +47,10 @@
                     "$ref": "#/definitions/ICompositeValue",
                     "description": "Optional account-specific replacement for trader.defaultMaxLossPerDay. Fixed values use account currency; percentage values use the highest tax-neutral performance equity in the current risk day. Historical execution cancels pending intent and creates reduce-only liquidation orders after breach, while live execution currently blocks later entries. A strategy risk override cannot change this account-wide limit."
                 },
+                "riskOverrides": {
+                    "$ref": "#/definitions/ILiveRiskOverrides",
+                    "description": "Final field-level overrides applied to every Live strategy after static strategy configuration."
+                },
                 "riskDay": {
                     "$ref": "#/definitions/IAccountRiskDayPolicy",
                     "description": "Account-owned daily risk reset policy"
@@ -173,6 +177,71 @@
                 "fixed",
                 "perc"
             ]
+        },
+        "ILiveRiskOverrides": {
+            "type": "object",
+            "properties": {
+                "hv": {
+                    "type": "object",
+                    "properties": {
+                        "bands": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "riskMultiplier": {
+                                        "type": "number"
+                                    },
+                                    "threshold": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "riskMultiplier",
+                                    "threshold"
+                                ],
+                                "additionalProperties": false
+                            }
+                        },
+                        "lookbackDays": {
+                            "type": "number"
+                        },
+                        "shock": {
+                            "type": "number"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "maxCapitalPerTrade": {
+                    "$ref": "#/definitions/ICompositeValue"
+                },
+                "maxDailyVolumeParticipationPerTrade": {
+                    "type": "number"
+                },
+                "maxDrawdownPercPerDay": {
+                    "type": "number"
+                },
+                "maxExecutionBarGapFactor": {
+                    "type": "number"
+                },
+                "maxRiskPercPerTrade": {
+                    "type": "number"
+                },
+                "minCapitalPerTrade": {
+                    "$ref": "#/definitions/ICompositeValue"
+                },
+                "minRecentExecutionBars": {
+                    "type": "number"
+                },
+                "minSignalScore": {
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false,
+            "description": "Account-owned final overrides exposed by the Live risk editor."
         },
         "IAccountRiskDayPolicy": {
             "type": "object",
