@@ -677,6 +677,14 @@
         "IConfigLiveTrading": {
             "type": "object",
             "properties": {
+                "logLevel": {
+                    "type": "string",
+                    "enum": [
+                        "standard",
+                        "verbose"
+                    ],
+                    "description": "Diagnostic detail written to the live journal log; standard still retains errors and signal outcomes."
+                },
                 "useStrategyScores": {
                     "type": "boolean",
                     "description": "Whether the live trader freezes and consumes causal strategy scores when it starts or restarts"

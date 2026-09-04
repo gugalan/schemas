@@ -51,10 +51,6 @@
                     "$ref": "#/definitions/ILiveRiskOverrides",
                     "description": "Final field-level overrides applied to every Live strategy after static strategy configuration."
                 },
-                "riskDay": {
-                    "$ref": "#/definitions/IAccountRiskDayPolicy",
-                    "description": "Account-owned daily risk reset policy"
-                },
                 "tax": {
                     "type": "object",
                     "properties": {
@@ -134,7 +130,6 @@
                 "currency",
                 "defaultRiskProfileId",
                 "id",
-                "riskDay",
                 "type"
             ],
             "additionalProperties": false,
@@ -242,25 +237,6 @@
             },
             "additionalProperties": false,
             "description": "Account-owned final overrides exposed by the Live risk editor."
-        },
-        "IAccountRiskDayPolicy": {
-            "type": "object",
-            "properties": {
-                "boundary": {
-                    "type": "number",
-                    "description": "Local reset boundary for soft and hard daily risk state, encoded as HHMM where 0 is midnight and 1730 is 17:30."
-                },
-                "timeZone": {
-                    "type": "string",
-                    "description": "IANA timezone used to interpret the risk-day reset boundary independently from instrument sessions and civil tax dates."
-                }
-            },
-            "required": [
-                "boundary",
-                "timeZone"
-            ],
-            "additionalProperties": false,
-            "description": "Account-owned boundary used to reset daily risk state independently from instrument sessions."
         },
         "TaxCollectionMode": {
             "type": "string",

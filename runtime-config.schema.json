@@ -675,6 +675,13 @@
         "IConfigLiveTrading": {
             "type": "object",
             "properties": {
+                "logLevel": {
+                    "type": "string",
+                    "enum": [
+                        "standard",
+                        "verbose"
+                    ]
+                },
                 "useStrategyScores": {
                     "type": "boolean"
                 }
