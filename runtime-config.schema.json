@@ -5,6 +5,9 @@
         "IRuntimeConfig": {
             "type": "object",
             "properties": {
+                "dataRoot": {
+                    "type": "string"
+                },
                 "miner": {
                     "$ref": "#/definitions/IConfigMiner"
                 },
@@ -22,6 +25,7 @@
                 }
             },
             "required": [
+                "dataRoot",
                 "trader"
             ],
             "additionalProperties": false

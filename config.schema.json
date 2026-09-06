@@ -8,6 +8,10 @@
                 "$schema": {
                     "type": "string"
                 },
+                "dataRoot": {
+                    "type": "string",
+                    "description": "Absolute process-local storage root. Never part of a frozen trader configuration."
+                },
                 "miner": {
                     "$ref": "#/definitions/IConfigMiner",
                     "description": "Miner configuration"
@@ -25,6 +29,7 @@
                 }
             },
             "required": [
+                "dataRoot",
                 "trader"
             ],
             "additionalProperties": false,
@@ -749,7 +754,7 @@
                 },
                 "messageWrapper": {
                     "type": "string",
-                    "description": "Optional message wrapper\n\nSupported placeholders: \n- {body} - the notification message\n- {<meta_key1>}, {<meta_key1>}, ... - the notification meta keys, if any"
+                    "description": "Optional message wrapper\n\nSupported placeholders:\n- {body} - the notification message\n- {<meta_key1>}, {<meta_key1>}, ... - the notification meta keys, if any"
                 }
             },
             "required": [
